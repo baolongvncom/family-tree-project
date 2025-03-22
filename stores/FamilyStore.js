@@ -1,8 +1,11 @@
 import { useCookie } from "#app";
+import { da } from "vuetify/locale";
 
 export const FamilyStore = defineStore("family", {
   state: () => ({
+    tree_id: "",
     family: [],
+    permission: "",
   }),
   actions: {
     async getFamily(tree_id) {
@@ -27,6 +30,7 @@ export const FamilyStore = defineStore("family", {
 
         if (data.value?.success) {
           this.family = data.value?.family;
+          this.tree_id = tree_id;
         } else {
           alert("Có lỗi trong lúc lấy Family Member. Thử lại sau");
           navigateTo('/');
@@ -71,4 +75,5 @@ export const FamilyStore = defineStore("family", {
       }
     },
   },
+  persist: true,
 });

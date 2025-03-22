@@ -13,7 +13,7 @@
             :description="treeInfos[(n - 1) * 6 + (j - 1)].description"
             :date="treeInfos[(n - 1) * 6 + (j - 1)].date"
             :image="treeInfos[(n - 1) * 6 + (j - 1)].image"
-            :to="`/family/${treeInfos[(n - 1) * 6 + (j - 1)]._id}`"
+            :url="`/family/${treeInfos[(n - 1) * 6 + (j - 1)]._id}`"
           ></tree-info>
         </v-col>
       </template>

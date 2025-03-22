@@ -19,7 +19,7 @@
             height="300"
             alt="Empty Image"
           ></v-img>
-
+          <v-switch v-model="gender_boolean" color="primary" label="Gender"></v-switch>
           <v-text-field
             v-model="member.full_name"
             label="Full Name"
@@ -73,6 +73,7 @@ export default {
       file: null,
       isDisabledButton: false,
       familyStore: FamilyStore(),
+      gender_boolean: false,
     };
   },
   computed: {
@@ -88,12 +89,14 @@ export default {
         this.imageUrl = null;
       }
     },
+    gender_boolean(val) {
+      this.member.gender = val ? 'female' : 'male';
+    }
   },
   methods: {
     async addFamilyMember() {
       this.isDisabledButton = true;
       try {
-        
         this.member.tree_id = this.$route.params.id;
         await this.familyStore.addMember(this.member, this.file);
       } finally {

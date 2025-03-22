@@ -93,58 +93,103 @@
           flat
           rounded
         >
-          achivements
+          {{ form.parents_relationship }}
         </v-card>
       </v-col>
 
-      <v-col class="d-flex text-center" cols="12" md="5">
+      <v-col class="d-flex flex-column text-center" cols="12" md="5">
         <v-card
-          class="text-h6 justify-center align-center flex-1-1 d-flex flex-column"
+          class="text-h6 align-center flex-1-1 d-flex flex-column"
           height="50%"
           flat
           rounded
         >
-          <v-select
+          <v-card width="100%" height="20%" class="d-flex">
+            <v-select
+              v-model="form.parents_relationship_model"
+              :items="filtered_couples"
+              :item-props="parentsItemProps"
+              label="Select Your Parents"
+              width="100%"
+              persistent-hint
+              return-object
+            ></v-select>
+          </v-card>
+          <v-card
             v-if="memberStore.gender === 'male'"
-            v-model="wife"
-            :items="filtered_unmarried_members"
-            :hint="`${wife ? husband.date_of_birth : 'None'}, ${
-              wife ? husband.place_of_birth : 'None'
-            }`"
-            item-title="full_name"
-            item-value="_id"
-            label="Select Your Wife"
             width="100%"
-            persistent-hint
-            return-object
+            height="20%"
+            class="d-flex"
           >
-          </v-select>
-          <v-select
+            <v-select
+              v-model="form.wife"
+              :items="filtered_unmarried_members"
+              :hint="`${form.wife.date_of_birth ?? 'None'}, ${
+                form.wife.place_of_birth ?? 'None'
+              }`"
+              item-title="full_name"
+              item-value="_id"
+              label="Select Your Wife"
+              width="100%"
+              persistent-hint
+              return-object
+            >
+            </v-select>
+          </v-card>
+          <v-card
             v-if="memberStore.gender === 'female'"
-            v-model="husband"
-            :items="filtered_unmarried_members"
-            :hint="`${husband ? husband.date_of_birth : 'None'}, ${
-              husband ? husband.place_of_birth : 'None'
-            }`"
-            item-title="full_name"
-            item-value="_id"
-            label="Select Your Husband"
             width="100%"
-            persistent-hint
-            return-object
+            height="20%"
+            class="d-flex"
           >
-          </v-select>
-          <v-select
-            multiple
-            v-model="children"
-            :items="filtered_unparents_members"
-            item-title="full_name"
-            item-value="_id"
-            label="Select Your Children"
-            width="100%"
-            chips
+            <v-select
+              v-model="form.husband"
+              :items="filtered_unmarried_members"
+              :hint="`${form.husband.date_of_birth ?? 'None'}, ${
+                form.husband.place_of_birth ?? 'None'
+              }`"
+              item-title="full_name"
+              item-value="_id"
+              label="Select Your Husband"
+              width="100%"
+              persistent-hint
+              return-object
+            >
+            </v-select>
+          </v-card>
+          <v-card width="100%" height="20%" class="d-flex">
+            <v-select
+              multiple
+              v-model="form.children"
+              :items="filtered_unparents_members"
+              :item-props="itemProps"
+              label="Select Your Children"
+              width="100%"
+              chips
+            >
+            </v-select>
+          </v-card>
+          <v-btn
+            @click="addRelationship"
+            :disabled="isDisableUpdateRelationship"
+            color="primary"
+            class="mt-4"
+            >Update Relationsip</v-btn
           >
-          </v-select>
+          <v-btn
+            @click="deleteCouplesRelationship"
+            :disabled="isDisableDeleteCouplesRelationship"
+            color="primary"
+            class="mt-4"
+            >Delete Couples Relationsip</v-btn
+          >
+          <v-btn
+            @click="deleteParentsRelationship"
+            :disabled="isDisableDeleteParentsRelationship"
+            color="primary"
+            class="mt-4"
+            >Delete Parents Relationsip</v-btn
+          >
         </v-card>
       </v-col>
     </v-row>
@@ -152,20 +197,26 @@
 </template>
 
 <script>
-import { MemberStore } from "~/stores/MemberStore";
+import isEqual from "lodash/isEqual";
 
 export default {
   name: "MemberDashboard",
   data() {
     return {
-      relationsip: {},
-      husband: null,
-      wife: null,
-      children: [],
       editRelationship: false,
       member_id: this.$route.params.id,
       unmarried_members: [],
       unparents_members: [],
+      couples: [],
+      form: {
+        husband: { _id: "", full_name: "None" },
+        wife: { _id: "", full_name: "None" },
+        children: [],
+        father: { _id: "", full_name: "None" },
+        mother: { _id: "", full_name: "None" },
+        parents_relationship_model: {},
+        parents_relationship: "",
+      },
     };
   },
   setup() {
@@ -173,60 +224,173 @@ export default {
       layout: "member",
     });
   },
+  watch: {
+    "form.parents_relationship_model"(val) {
+      this.form.parents_relationship = val?._id || "";
+    },
+  },
   computed: {
+    filtered_couples() {
+      return this.couples
+        .filter((item) => item._id !== this.memberStore.couples_relationship)
+        .map((item) => ({
+          mother: item.data.wife,
+          father: item.data.husband,
+          couples_name:
+            item.data.husband.full_name + " - " + item.data.wife.full_name,
+          date_of_birth:
+            item.data.husband.date_of_birth +
+            " - " +
+            item.data.wife.date_of_birth,
+          _id: item._id,
+        }));
+    },
+    isDisableUpdateRelationship() {
+      return (
+        this.editRelationship ||
+        (this.form.husband === this.memberStore.husband &&
+          this.form.wife === this.memberStore.wife &&
+          isEqual(this.form.children, this.memberStore.children) &&
+          this.form.father === this.memberStore.father &&
+          this.form.mother === this.memberStore.mother &&
+          this.form.parents_relationship ===
+            this.memberStore.parents_relationship)
+      );
+    },
+    isDisableDeleteCouplesRelationship() {
+      return this.editRelationship || !this.memberStore.couples_relationship;
+    },
+    isDisableDeleteParentsRelationship() {
+      return this.editRelationship || !this.memberStore.parents_relationship;
+    },
     memberStore() {
       return MemberStore();
     },
     filtered_unmarried_members() {
-      const partner_id =
-        this.memberStore.gender === "male" ? this.wife?._id : this.husband?._id;
-      return this.unmarried_members.filter(
+      return [
+        ...(this.memberStore.husband._id ? [this.memberStore.husband] : ""),
+        ...(this.memberStore.wife._id ? [this.memberStore.wife] : ""),
+        ...this.unmarried_members,
+      ].filter(
         (item) =>
-          (item?._id !== this.member_id &&
-            !this.children.includes(item?._id)) ||
-          item?._id === partner_id
+          item?.gender != this.memberStore.gender &&
+          item?._id !== this.member_id &&
+          !this.memberStore.children.includes(item?._id)
       );
     },
+
     filtered_unparents_members() {
-      return this.unparents_members.filter(
+      return [...this.memberStore.children, ...this.unparents_members].filter(
         (item) =>
           item._id !== this.member_id &&
-          item._id !== this.wife?._id &&
-          item._id !== this.husband?._id
+          item._id !== this.memberStore.wife?._id &&
+          item._id !== this.memberStore.husband?._id &&
+          item._id !== this.form.husband?._id &&
+          item._id !== this.form.wife?._id
       );
     },
   },
   methods: {
-    addRelationship() {
-      if (this.wife || this.husband) {
-        const partner_id =
-          this.memberStore.gender === "male"
-            ? this.wife?._id
-            : this.husband?._id;
-        this.memberStore.addCoupleRelationship(
-          this.member_id,
-          partner_id,
-          this.children
-        );
+    itemProps(item) {
+      return {
+        title: item.full_name,
+        subtitle: item.date_of_birth + ", " + item.place_of_birth,
+        value: item._id,
+      };
+    },
+    parentsItemProps(item) {
+      return {
+        title: item.couples_name,
+        subtitle: item.date_of_birth,
+        value: item._id,
+      };
+    },
+    async addRelationship() {
+      let isAdded = false;
+      try {
+        this.editRelationship = true;
+
+        if (this.form.wife._id || this.form.husband._id) {
+          const partner_id =
+            this.memberStore.gender === "male"
+              ? this.form.wife?._id
+              : this.form.husband?._id;
+
+          await this.memberStore.deleteCouplesRelationship();
+          await this.memberStore.addCoupleRelationship(
+            partner_id,
+            this.form.children
+          );
+
+          isAdded = true;
+        }
+
+        if (this.form.parents_relationship) {
+          await this.memberStore.deleteParentsRelationship();
+          await this.memberStore.addParentsRelationship(
+            this.form.parents_relationship,
+          );
+
+          isAdded = true;
+        }
+      } catch (error) {
+        alert("Lỗi khi cập nhật mối quan hệ: " + error);
+      } finally {
+        this.editRelationship = false;
+        if (isAdded) await this.fetchData();
       }
+    },
+    async deleteParentsRelationship() {
+      let isAdded = false;
+      if (this.memberStore.parents_relationship) {
+        this.editRelationship = true;
+        await this.memberStore.deleteParentsRelationship();
+        this.editRelationship = false;
+        isAdded = true;
+      }
+      if (isAdded) await this.fetchData();
+    },
+    async deleteCouplesRelationship() {
+      let isAdded = false;
+      if (this.memberStore.couples_relationship) {
+        this.editRelationship = true;
+        await this.memberStore.deleteCouplesRelationship();
+        this.editRelationship = false;
+        isAdded = true;
+      }
+      if (isAdded) await this.fetchData();
+    },
+    async fetchData() {
+      await MemberStore().getMember(this.member_id);
+      await Promise.all([
+        MemberStore().getCouplesRelationship(),
+        MemberStore().getParentsRelationship(),
+        MemberStore()
+          .getUnmarried()
+          .then((data) => (this.unmarried_members = data)),
+        MemberStore()
+          .getUnparents()
+          .then((data) => (this.unparents_members = data)),
+        MemberStore()
+          .getCouples()
+          .then((data) => (this.couples = data)),
+      ]);
+
+      this.form = {
+        husband: MemberStore().husband,
+        wife: MemberStore().wife,
+        children: MemberStore().children,
+        father: MemberStore().father,
+        mother: MemberStore().mother,
+      };
+      this.form.parents_relationship = this.memberStore.parents_relationship;
+      this.form.parents_relationship_model = this.filtered_couples.find(
+        (item) => item._id === this.memberStore.parents_relationship
+      );
     },
   },
   async created() {
-    this.memberStore.getMember(this.member_id);
-    [this.relationsip, this.unmarried_members, this.unparents_members] =
-      await Promise.all([
-        this.memberStore.getRelationship(this.member_id),
-        this.memberStore.getUnmarried(this.member_id),
-        this.memberStore.getUnparents(this.member_id),
-      ]);
-
-    if (this.relationsip.type && this.relationsip.type == "couples") {
-      this.husband = this.relationsip.data.husband;
-      this.wife = this.relationsip.data.wife;
-      this.children = this.relationsip.data.children;
-    } else {
-      this.editRelationship = true;
-    }
+    await this.fetchData();
   },
 };
 </script>

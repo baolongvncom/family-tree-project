@@ -5,6 +5,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   modules: [
+    'pinia-plugin-persistedstate/nuxt',
     "@pinia/nuxt",
     (_options, nuxt) => {
       nuxt.hooks.hook('vite:extendConfig', (config) => {
@@ -31,7 +32,6 @@ export default defineNuxtConfig({
       },
     },
   },
-
   vuetify: {
     moduleOptions: {
       labs: true, // Bật hỗ trợ các component thử nghiệm như VTreeview

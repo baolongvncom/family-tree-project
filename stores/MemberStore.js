@@ -2,6 +2,7 @@ import { useCookie } from "#app";
 
 export const MemberStore = defineStore("member", {
   state: () => ({
+    member_id: "",
     tree_id: "",
     full_name: "",
     gender: "",
@@ -14,10 +15,17 @@ export const MemberStore = defineStore("member", {
     date_of_birth: "",
     description: "",
     address: "",
-    relationship: "",
+    couples_relationship: "",
+    parents_relationship: "",
     alive: true,
     death_id: "",
-    achivements: [],
+    achievements: [],
+
+    husband: { _id: "", full_name: "None" },
+    wife: { _id: "", full_name: "None" },
+    children: [],
+    father: { _id: "", full_name: "None" },
+    mother: { _id: "", full_name: "None" },
   }),
   actions: {
     async getMember(member_id) {
@@ -41,6 +49,7 @@ export const MemberStore = defineStore("member", {
         }
 
         if (data.value?.success) {
+          this.member_id = member_id;
           this.tree_id = data.value?.member.tree_id;
           this.full_name = data.value?.member.full_name;
           this.gender = data.value?.member.gender;
@@ -53,21 +62,22 @@ export const MemberStore = defineStore("member", {
           this.date_of_birth = data.value?.member.date_of_birth;
           this.description = data.value?.member.description;
           this.address = data.value?.member.address;
-          this.relationship = data.value?.member.relationship;
+          this.couples_relationship = data.value?.member.couples_relationship;
+          this.parents_relationship = data.value?.member.parents_relationship;
           this.alive = data.value?.member.alive ?? true;
           this.death_id = data.value?.member.death_id;
           this.achievements = data.value?.member.achievements ?? [];
         } else {
-          alert("Có lỗi trong lúc lấy Member Info. Thử lại sau");
+          // alert("Có lỗi trong lúc lấy Member Info. Thử lại sau");
           navigateTo("/");
         }
       } catch (err) {
         console.error("Fetch Member Info thất bại:", err);
-        alert("Có lỗi trong lúc lấy Member Info. Thử lại sau");
+        // alert(`Có lỗi trong lúc lấy Member Info. Thử lại sau ${err}`);
         navigateTo("/");
       }
     },
-    async addCoupleRelationship(member_id, partner_id, children) {
+    async addCoupleRelationship(partner_id, children) {
       try {
         const config = useRuntimeConfig();
         const authToken = useCookie("auth-token");
@@ -75,7 +85,11 @@ export const MemberStore = defineStore("member", {
           `${config.public.apiBase}/api/relationship/addcouples`,
           {
             method: "POST",
-            body: JSON.stringify({ member_id, partner_id, children }),
+            body: JSON.stringify({
+              member_id: this.member_id,
+              partner_id,
+              children,
+            }),
             headers: {
               "Content-Type": "application/json",
               "auth-token": authToken.value,
@@ -88,15 +102,16 @@ export const MemberStore = defineStore("member", {
         }
 
         if (data.value?.success) {
-          await this.getMember(member_id);
+          // await Promise.all([this.getCouplesRelationship()]);
+          alert("Add Couples Relationship thành công");
         } else {
           alert("Có lỗi trong lúc Add Relationship. Thử lại sau");
-          navigateTo(`/member/${member_id}`);
+          navigateTo(`/member/${this.member_id}`);
         }
       } catch (err) {
         console.error("Add Relationship thất bại:", err);
         alert("Có lỗi trong lúc Add Relationship. Thử lại sau");
-        navigateTo(`/member/${member_id}`);
+        navigateTo(`/member/${this.member_id}`);
       }
     },
     async getUnmarried() {
@@ -125,7 +140,37 @@ export const MemberStore = defineStore("member", {
         }
       } catch (err) {
         console.error("Get Unmarried thất bại:", err);
-        alert("Có lỗi trong lúc Get Unmarried. Thử lại sau");
+        // alert("Có lỗi trong lúc Get Unmarried. Thử lại sau");
+        return [];
+      }
+    },
+    async getCouples() {
+      try {
+        const config = useRuntimeConfig();
+        const authToken = useCookie("auth-token");
+        const { data, error } = await useFetch(
+          `${config.public.apiBase}/api/member/getcouples`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "auth-token": authToken.value,
+            },
+          }
+        );
+
+        if (error.value) {
+          throw new Error(error.value.message);
+        }
+
+        if (data.value?.success) {
+          return data.value?.relationships;
+        } else {
+          return [];
+        }
+      } catch (err) {
+        console.error("Get Unmarried thất bại:", err);
+        // alert("Có lỗi trong lúc Get Couples. Thử lại sau");
         return [];
       }
     },
@@ -137,6 +182,7 @@ export const MemberStore = defineStore("member", {
           `${config.public.apiBase}/api/member/getunparents`,
           {
             method: "GET",
+
             headers: {
               "Content-Type": "application/json",
               "auth-token": authToken.value,
@@ -155,21 +201,24 @@ export const MemberStore = defineStore("member", {
         }
       } catch (err) {
         console.error("Get Unparents thất bại:", err);
-        alert("Có lỗi trong lúc Get Unparents. Thử lại sau");
+        // alert("Có lỗi trong lúc Get Unparents. Thử lại sau");
         return [];
       }
     },
-    async getRelationship(member_id) {
+    async addParentsRelationship(relationship_id) {
       try {
         const config = useRuntimeConfig();
         const authToken = useCookie("auth-token");
         const { data, error } = await useFetch(
-          `${config.public.apiBase}/api/relationship/get`,
+          `${config.public.apiBase}/api/relationship/addparents`,
           {
             method: "POST",
+            body: JSON.stringify({
+              member_id: this.member_id,
+              relationship_id,
+            }),
             headers: {
               "Content-Type": "application/json",
-              body: JSON.stringify({ member_id }),
               "auth-token": authToken.value,
             },
           }
@@ -180,15 +229,164 @@ export const MemberStore = defineStore("member", {
         }
 
         if (data.value?.success) {
-          return data.value?.relationship;
+          // await Promise.all([this.getParentsRelationship()]);
+          alert("Add Parents Relationship thành công");
         } else {
-          return {};
+          throw new Error(data.value?.message);
         }
       } catch (err) {
-        console.error("Get Unmarried thất bại:", err);
-        alert("Có lỗi trong lúc Get Unmarried. Thử lại sau");
+        console.error("Add Parents Relationship thất bại:", err);
+        alert("Có lỗi trong lúc Add Parents Relationship. Thử lại sau");
         return {};
       }
     },
+    async getParentsRelationship() {
+      try {
+        const config = useRuntimeConfig();
+        const authToken = useCookie("auth-token");
+        const { data, error } = await useFetch(
+          `${config.public.apiBase}/api/parents_relationship/get`,
+          {
+            method: "POST",
+            body: JSON.stringify({ member_id: this.member_id }),
+
+            headers: {
+              "Content-Type": "application/json",
+              "auth-token": authToken.value,
+            },
+          }
+        );
+
+        if (error.value) {
+          throw new Error(error.value.message);
+        }
+
+        if (data.value?.success) {
+          if (
+            data.value.relationship &&
+            data.value.relationship.type == "couples"
+          ) {
+            this.mother = data.value.relationship.data.wife;
+            this.father = data.value.relationship.data.husband;
+            this.parents_relationship = data.value.relationship._id;
+          } else {
+            this.mother = { _id: "", full_name: "None" };
+            this.father = { _id: "", full_name: "None" };
+            this.parents_relationship = data.value.relationship._id;
+          }
+        } else {
+          throw new Error(data.value?.message);
+        }
+      } catch (err) {
+        console.error("Get Parents Relationship thất bại:", err);
+        // alert("Có lỗi trong lúc Get Parents Relationship. Thử lại sau");
+      }
+    },
+    async getCouplesRelationship() {
+      try {
+        const config = useRuntimeConfig();
+        const authToken = useCookie("auth-token");
+        const { data, error } = await useFetch(
+          `${config.public.apiBase}/api/couples_relationship/get`,
+          {
+            method: "POST",
+            body: JSON.stringify({ member_id: this.member_id }),
+            headers: {
+              "Content-Type": "application/json",
+              "auth-token": authToken.value,
+            },
+          }
+        );
+
+        if (error.value) {
+          throw new Error(error.value.message);
+        }
+
+        if (data.value?.success) {
+          if (
+            data.value.relationship &&
+            data.value.relationship.type == "couples"
+          ) {
+            this.husband = data.value.relationship.data.husband;
+            this.wife = data.value.relationship.data.wife;
+            this.children = data.value.relationship.data.children;
+            this.couples_relationship = data.value.relationship._id;
+          } else {
+            this.husband = { _id: "", full_name: "None" };
+            this.wife = { _id: "", full_name: "None" };
+            this.children = [];
+            this.couples_relationship = data.value.relationship._id;
+          }
+        } else {
+          throw new Error(data.value?.message);
+        }
+      } catch (err) {
+        console.error("Get Couples Relationship thất bại:", err);
+        // alert("Có lỗi trong lúc Get Couples Relationship. Thử lại sau");
+      }
+    },
+
+    async deleteCouplesRelationship() {
+      try {
+        const config = useRuntimeConfig();
+        const authToken = useCookie("auth-token");
+        const { data, error } = await useFetch(
+          `${config.public.apiBase}/api/relationship/deletecouples`,
+          {
+            method: "POST",
+            body: JSON.stringify({ member_id: this.member_id }),
+            headers: {
+              "Content-Type": "application/json",
+              "auth-token": authToken.value,
+            },
+          }
+        );
+
+        if (error.value) {
+          throw new Error(error.value.message);
+        }
+
+        if (data.value?.success) {
+          // await this.getCouplesRelationship();
+        } else {
+          throw new Error(data.value?.message);
+        }
+      } catch (err) {
+        console.error("Delete Relationship thất bại:", err);
+        // alert("Có lỗi trong lúc Delete Relationship. Thử lại sau");
+      }
+    },
+
+    async deleteParentsRelationship() {
+      try {
+        const config = useRuntimeConfig();
+        const authToken = useCookie("auth-token");
+        const { data, error } = await useFetch(
+          `${config.public.apiBase}/api/relationship/deleteparents`,
+          {
+            method: "POST",
+            body: JSON.stringify({ member_id: this.member_id }),
+            headers: {
+              "Content-Type": "application/json",
+              "auth-token": authToken.value,
+            },
+          }
+        );
+
+        if (error.value) {
+          throw new Error(error.value.message);
+        }
+
+        if (data.value?.success) {
+          // await this.getParentsRelationship();
+        } else {
+          throw new Error(data.value?.message);
+        }
+      } catch (err) {
+        console.error("Delete Parents Relationship thất bại:", err);
+        // alert("Có lỗi trong lúc Delete Parents Relationship. Thử lại sau");
+      }
+    },
   },
+  persist: true,
 });

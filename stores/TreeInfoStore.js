@@ -71,4 +71,5 @@ export const TreeInfoStore = defineStore("treeInfo", {
       }
     },
   },
+  persist: true,
 });
