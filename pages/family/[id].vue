@@ -1,5 +1,9 @@
 <template>
-  <v-container width="60vw" fluid class="d-flex fill-height align-center justify-center">
+  <v-container
+    width="60vw"
+    fluid
+    class="d-flex fill-height align-center justify-center"
+  >
     <v-row justify="space-between" dense>
       <v-col cols="12" md="7">
         <v-treeview
@@ -33,7 +37,9 @@
 
             <template v-else>
               <v-avatar
-                :image="selected.image === '' ? '/dummy_avatar.png' : selected.image"
+                :image="
+                  selected.image === '' ? '/dummy_avatar.png' : selected.image
+                "
                 class="mb-2"
                 size="88"
               ></v-avatar>
@@ -83,7 +89,11 @@
                 hide-details
                 readonly
               ></v-text-field>
-              <v-btn :to="`/member/${selected._id}`" color="primary" variant="elevated">
+              <v-btn
+                :to="`/member/${selected._id}`"
+                color="primary"
+                variant="elevated"
+              >
                 View
               </v-btn>
             </template>
@@ -102,10 +112,13 @@ export default {
       layout: "family",
     });
   },
-  data: () => ({
-    active: [],
-    open: [],
-  }),
+  data() {
+    return {
+      tree_id: this.$route.params.id,
+      active: [],
+      open: [],
+    };
+  },
   computed: {
     family() {
       return FamilyStore().family;
@@ -116,8 +129,8 @@ export default {
         : null;
     },
   },
-  created() {
-    FamilyStore().getFamily(this.$route.params.id);
+  async created() {
+    await FamilyStore().getFamily(this.tree_id);
   },
 };
 </script>

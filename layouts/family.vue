@@ -3,7 +3,7 @@
     <v-app-bar color="primary">
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-app-bar-title>Family Tree</v-app-bar-title>
+      <v-app-bar-title>{{ FamilyStore().family_name }}</v-app-bar-title>
 
       <v-spacer></v-spacer>
 
@@ -28,6 +28,12 @@
           title="Tạo Member"
           :to="`/family/add-${$route.params.id}`"
         ></v-list-item>
+        <v-list-item
+          v-if="FamilyStore().permission === 'owner'"
+          prepend-icon="mdi-account-box"
+          title="Permissions Management"
+          :to="`/family/permissions-${$route.params.id}`"
+        ></v-list-item>
       </v-list>
 
       <template v-slot:append>
@@ -47,6 +53,7 @@
 export default {
   data() {
     return {
+      tree_id: this.$route.params.id,
       drawer: null,
     };
   },
@@ -59,6 +66,9 @@ export default {
     handleSignOut() {
       this.userStore.signOut();
     },
+  },
+  async created() {
+    await FamilyStore().getFamily(this.tree_id);
   },
 };
 </script>

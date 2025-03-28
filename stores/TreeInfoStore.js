@@ -7,16 +7,11 @@ export const TreeInfoStore = defineStore("treeInfo", {
   actions: {
     async getTreeInfos() {
       try {
-        const config = useRuntimeConfig();
-        const authToken = useCookie("auth-token");
-        const { data, error } = await useFetch(
-          `${config.public.apiBase}/api/treeinfo/get`,
+        const { useFetchApi } = useApi();
+        const { data, error } = await useFetchApi(
+          `/api/treeinfo/get`,
           {
             method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": authToken.value,
-            },
           }
         );
 
@@ -45,21 +40,14 @@ export const TreeInfoStore = defineStore("treeInfo", {
         }
 
         treeInfo.image = uploadedImageUrl || "";
-
-        const config = useRuntimeConfig();
-        const authToken = useCookie("auth-token");
-        const response = await fetch(
-          `${config.public.apiBase}/api/treeinfo/add`,
+        const { fetchApi } = useApi();
+        const data = await fetchApi(
+          `/api/treeinfo/add`,
           {
             method: "POST",
             body: JSON.stringify(treeInfo),
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": authToken.value,
-            },
           }
         );
-        const data = await response.json();
 
         if (data.success) {
           alert("Family tree added successfully!");

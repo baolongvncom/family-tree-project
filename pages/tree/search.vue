@@ -22,13 +22,15 @@
           >No Tree Found</v-card
         >
         <tree-info
+          v-else
           :name="treeInfo?.name"
           :description="treeInfo?.description"
           :date="treeInfo?.date"
           :image="treeInfo?.image"
           :url="`/family/${treeInfo?._id}`"
-          v-else
+          :role="treeInfo?.role?.[UserStore().email] ?? 'guest'"
           class="mt-4 w-100"
+          @ask="askToView"
         >
         </tree-info>
       </v-card-text>
@@ -52,17 +54,12 @@ export default {
   methods: {
     async search() {
       try {
-        const config = useRuntimeConfig();
-        const authToken = useCookie("auth-token");
-        const { data, error } = await useFetch(
-          `${config.public.apiBase}/api/treeinfo/find`,
+        const { useFetchApi } = useApi();
+        const { data, error } = await useFetchApi(
+          `/api/treeinfo/find`,
           {
             method: "POST",
             body: JSON.stringify({ code: this.code }),
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": authToken.value,
-            },
           }
         );
 
@@ -82,6 +79,33 @@ export default {
       } catch (err) {
         console.error("Find Tree thất bại:", err);
         alert("Có lỗi trong lúc tìm kiếm Tree. Thử lại sau");
+        this.code = "";
+        this.treeInfo = null;
+      }
+    },
+    async askToView() {
+      try {
+        const { useFetchApi } = useApi();
+        const { data, error } = await useFetchApi(
+          `/api/treeinfo/asktoview`,
+          {
+            method: "POST",
+            body: JSON.stringify({ tree_id: this.treeInfo._id }),
+          }
+        );
+
+        if (error.value) {
+          throw new Error(error.value.message);
+        }
+
+        if (data.value?.success) {
+          await this.search();
+        }
+      } catch (err) {
+        console.error("Ask to View Tree thất bại:", err);
+        alert("Có lỗi trong lúc Ask to View Tree. Thử lại sau");
+        this.code = "";
+        this.treeInfo = null;
       }
     },
   },

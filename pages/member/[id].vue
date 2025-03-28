@@ -328,7 +328,7 @@ export default {
         if (this.form.parents_relationship) {
           await this.memberStore.deleteParentsRelationship();
           await this.memberStore.addParentsRelationship(
-            this.form.parents_relationship,
+            this.form.parents_relationship
           );
 
           isAdded = true;
@@ -362,6 +362,8 @@ export default {
     },
     async fetchData() {
       await MemberStore().getMember(this.member_id);
+      // if (MemberStore().tree_id !== FamilyStore().tree_id)
+      //   await FamilyStore().getFamily(MemberStore().tree_id);
       await Promise.all([
         MemberStore().getCouplesRelationship(),
         MemberStore().getParentsRelationship(),

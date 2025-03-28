@@ -1,44 +1,38 @@
 import { useCookie } from "#app";
-import { da } from "vuetify/locale";
 
 export const FamilyStore = defineStore("family", {
   state: () => ({
     tree_id: "",
     family: [],
     permission: "",
+    family_name: "",
   }),
   actions: {
     async getFamily(tree_id) {
       try {
-        const config = useRuntimeConfig();
-        const authToken = useCookie("auth-token");
-        const { data, error } = await useFetch(
-          `${config.public.apiBase}/api/family/get`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": authToken.value,
-            },
-            body: JSON.stringify({tree_id: tree_id}),
-          }
-        );
+        const { useFetchApi } = useApi();
+        const { data, error } = await useFetchApi(`/api/family/get`, {
+          method: "POST",
+          body: JSON.stringify({ tree_id: tree_id }),
+        });
 
         if (error.value) {
           throw new Error(error.value.message);
         }
 
         if (data.value?.success) {
+          this.permission = data.value?.permission;
           this.family = data.value?.family;
           this.tree_id = tree_id;
+          this.family_name = data.value?.family_name;
         } else {
           alert("Có lỗi trong lúc lấy Family Member. Thử lại sau");
-          navigateTo('/');
+          navigateTo("/");
         }
       } catch (err) {
         console.error("Fetch Family Member thất bại:", err);
         alert("Có lỗi trong lúc lấy Family Member. Thử lại sau");
-        navigateTo('/');
+        navigateTo("/");
       }
     },
     async addMember(member, file) {
@@ -50,20 +44,11 @@ export const FamilyStore = defineStore("family", {
 
         member.image = uploadedImageUrl || "";
 
-        const config = useRuntimeConfig();
-        const authToken = useCookie("auth-token");
-        const response = await fetch(
-          `${config.public.apiBase}/api/family/add`,
-          {
-            method: "POST",
-            body: JSON.stringify(member),
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": authToken.value,
-            },
-          }
-        );
-        const data = await response.json();
+        const { fetchApi } = useApi();
+        const data = await fetchApi(`/api/family/add`, {
+          method: "POST",
+          body: JSON.stringify(member),
+        });
 
         if (data.success) {
           alert("Family Member added successfully!");
@@ -72,6 +57,59 @@ export const FamilyStore = defineStore("family", {
         }
       } catch (error) {
         alert("Error adding family member: " + error.message);
+      }
+    },
+    async getPermissions(tree_id) {
+      try {
+        const { fetchApi } = useApi();
+        const data = await fetchApi(`/api/treeinfo/getpermissions`, {
+          method: "POST",
+          body: JSON.stringify({ tree_id }),
+        });
+
+        if (data.success) {
+          return data.permissions;
+        } else {
+          throw new Error(data.message);
+        }
+      } catch (err) {
+        console.error("Fetch Family Permissions thất bại:", err);
+        navigateTo(`/family/${this.tree_id}`);
+      }
+    },
+    async updatePermission(tree_id, user_email, new_permission) {
+      try {
+        const { fetchApi } = useApi();
+        const data = await fetchApi(`/api/treeinfo/updatepermission`, {
+          method: "POST",
+          body: JSON.stringify({ tree_id, user_email, new_permission }),
+        });
+
+        if (data.success) {
+          if (new_permission === "owner") navigateTo(`/family/${this.tree_id}`);
+        } else {
+          throw new Error(data.message);
+        }
+      } catch (err) {
+        console.error("Update Family Permissions thất bại:", err);
+        navigateTo(`/family/${this.tree_id}`);
+      }
+    },
+    async deletePermission(tree_id, user_email) {
+      try {
+        const { fetchApi } = useApi();
+        const data = await fetchApi(`/api/treeinfo/deletepermission`, {
+          method: "POST",
+          body: JSON.stringify({ tree_id, user_email }),
+        });
+
+        if (data.success) {
+        } else {
+          throw new Error(data.message);
+        }
+      } catch (err) {
+        console.error("Delete Family Permissions thất bại:", err);
+        navigateTo(`/family/${this.tree_id}`);
       }
     },
   },

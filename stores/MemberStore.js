@@ -30,19 +30,11 @@ export const MemberStore = defineStore("member", {
   actions: {
     async getMember(member_id) {
       try {
-        const config = useRuntimeConfig();
-        const authToken = useCookie("auth-token");
-        const { data, error } = await useFetch(
-          `${config.public.apiBase}/api/member/get`,
-          {
-            method: "POST",
-            body: JSON.stringify({ member_id }),
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": authToken.value,
-            },
-          }
-        );
+        const { useFetchApi } = useApi();
+        const { data, error } = await useFetchApi(`/api/member/get`, {
+          method: "POST",
+          body: JSON.stringify({ member_id }),
+        });
 
         if (error.value) {
           throw new Error(error.value.message);
@@ -79,10 +71,9 @@ export const MemberStore = defineStore("member", {
     },
     async addCoupleRelationship(partner_id, children) {
       try {
-        const config = useRuntimeConfig();
-        const authToken = useCookie("auth-token");
-        const { data, error } = await useFetch(
-          `${config.public.apiBase}/api/relationship/addcouples`,
+        const { useFetchApi } = useApi();
+        const { data, error } = await useFetchApi(
+          `/api/relationship/addcouples`,
           {
             method: "POST",
             body: JSON.stringify({
@@ -90,10 +81,6 @@ export const MemberStore = defineStore("member", {
               partner_id,
               children,
             }),
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": authToken.value,
-            },
           }
         );
 
@@ -116,18 +103,10 @@ export const MemberStore = defineStore("member", {
     },
     async getUnmarried() {
       try {
-        const config = useRuntimeConfig();
-        const authToken = useCookie("auth-token");
-        const { data, error } = await useFetch(
-          `${config.public.apiBase}/api/member/getunmarried`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": authToken.value,
-            },
-          }
-        );
+        const { useFetchApi } = useApi();
+        const { data, error } = await useFetchApi(`/api/member/getunmarried`, {
+          method: "GET",
+        });
 
         if (error.value) {
           throw new Error(error.value.message);
@@ -146,18 +125,10 @@ export const MemberStore = defineStore("member", {
     },
     async getCouples() {
       try {
-        const config = useRuntimeConfig();
-        const authToken = useCookie("auth-token");
-        const { data, error } = await useFetch(
-          `${config.public.apiBase}/api/member/getcouples`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": authToken.value,
-            },
-          }
-        );
+        const { useFetchApi } = useApi();
+        const { data, error } = await useFetchApi(`/api/member/getcouples`, {
+          method: "GET",
+        });
 
         if (error.value) {
           throw new Error(error.value.message);
@@ -176,19 +147,10 @@ export const MemberStore = defineStore("member", {
     },
     async getUnparents() {
       try {
-        const config = useRuntimeConfig();
-        const authToken = useCookie("auth-token");
-        const { data, error } = await useFetch(
-          `${config.public.apiBase}/api/member/getunparents`,
-          {
-            method: "GET",
-
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": authToken.value,
-            },
-          }
-        );
+        const { useFetchApi } = useApi();
+        const { data, error } = await useFetchApi(`/api/member/getunparents`, {
+          method: "GET",
+        });
 
         if (error.value) {
           throw new Error(error.value.message);
@@ -207,20 +169,15 @@ export const MemberStore = defineStore("member", {
     },
     async addParentsRelationship(relationship_id) {
       try {
-        const config = useRuntimeConfig();
-        const authToken = useCookie("auth-token");
-        const { data, error } = await useFetch(
-          `${config.public.apiBase}/api/relationship/addparents`,
+        const { useFetchApi } = useApi();
+        const { data, error } = await useFetchApi(
+          `/api/relationship/addparents`,
           {
             method: "POST",
             body: JSON.stringify({
               member_id: this.member_id,
               relationship_id,
             }),
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": authToken.value,
-            },
           }
         );
 
@@ -242,18 +199,12 @@ export const MemberStore = defineStore("member", {
     },
     async getParentsRelationship() {
       try {
-        const config = useRuntimeConfig();
-        const authToken = useCookie("auth-token");
-        const { data, error } = await useFetch(
-          `${config.public.apiBase}/api/parents_relationship/get`,
+        const { useFetchApi } = useApi();
+        const { data, error } = await useFetchApi(
+          `/api/parents_relationship/get`,
           {
             method: "POST",
             body: JSON.stringify({ member_id: this.member_id }),
-
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": authToken.value,
-            },
           }
         );
 
@@ -284,17 +235,12 @@ export const MemberStore = defineStore("member", {
     },
     async getCouplesRelationship() {
       try {
-        const config = useRuntimeConfig();
-        const authToken = useCookie("auth-token");
-        const { data, error } = await useFetch(
-          `${config.public.apiBase}/api/couples_relationship/get`,
+        const { useFetchApi } = useApi();
+        const { data, error } = await useFetchApi(
+          `/api/couples_relationship/get`,
           {
             method: "POST",
             body: JSON.stringify({ member_id: this.member_id }),
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": authToken.value,
-            },
           }
         );
 
@@ -328,17 +274,12 @@ export const MemberStore = defineStore("member", {
 
     async deleteCouplesRelationship() {
       try {
-        const config = useRuntimeConfig();
-        const authToken = useCookie("auth-token");
-        const { data, error } = await useFetch(
-          `${config.public.apiBase}/api/relationship/deletecouples`,
+        const { useFetchApi } = useApi();
+        const { data, error } = await useFetchApi(
+          `/api/relationship/deletecouples`,
           {
             method: "POST",
             body: JSON.stringify({ member_id: this.member_id }),
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": authToken.value,
-            },
           }
         );
 
@@ -359,17 +300,12 @@ export const MemberStore = defineStore("member", {
 
     async deleteParentsRelationship() {
       try {
-        const config = useRuntimeConfig();
-        const authToken = useCookie("auth-token");
-        const { data, error } = await useFetch(
-          `${config.public.apiBase}/api/relationship/deleteparents`,
+        const { useFetchApi } = useApi();
+        const { data, error } = await useFetchApi(
+          `/api/relationship/deleteparents`,
           {
             method: "POST",
             body: JSON.stringify({ member_id: this.member_id }),
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": authToken.value,
-            },
           }
         );
 

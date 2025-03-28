@@ -1,7 +1,7 @@
 <template>
-  <v-card class="mx-auto" max-width="344" width="fit-content">
+  <v-card class="mx-auto" max-width="270" width="fit-content">
     <v-img
-      height="200px"
+      height="200"
       :src="image ? image : 'https://cdn.vuetifyjs.com/images/cards/sunshine.jpg'"
       cover
     ></v-img>
@@ -11,12 +11,12 @@
     <v-card-subtitle> {{ date }} </v-card-subtitle>
 
     <v-card-actions>
-      <v-btn :to="url" color="orange-lighten-2" text="Explore"></v-btn>
+      <v-card-subtitle> {{ role }} </v-card-subtitle>
+      <v-btn  v-if="role === 'owner' || role === 'editor' || role === 'viewer'" :to="url" color="orange-lighten-2" text="Explore"></v-btn>
 
-      <v-spacer></v-spacer>
+      <v-btn :disabled="role === 'pending'" v-else @click="$emit('ask')" color="primary" text="Ask to View"></v-btn>
 
       <v-btn
-        v-if="description"
         :icon="show ? 'mdi-chevron-up' : 'mdi-chevron-down'"
         @click="show = !show"
       ></v-btn>
@@ -60,6 +60,10 @@ export default {
       type: String,
       default: "",
     },
+    role: {
+      type: String,
+      default: "guest",
+    }
   },
 };
 </script>
