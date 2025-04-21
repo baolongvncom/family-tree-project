@@ -2,8 +2,10 @@
   <v-container
     width="60vw"
     fluid
-    class="d-flex fill-height align-center justify-center"
+    class="d-flex flex-column fill-height align-center justify-center"
   >
+    <v-card-title>Share your Family Tree Code to others for searching for your Family Tree:</v-card-title>
+    <div style="font: bold; color: green;">{{ FamilyStore().code }}</div>
     <v-data-table
       :headers="headers"
       :items="permissions_formData"
@@ -58,6 +60,9 @@
         </div>
       </template>
     </v-data-table>
+    <v-btn :disabled="!FamilyStore().permission === 'owner'" color="red" @click="askToDeleteFamilyTree = true;">
+      Delete this Family Tree
+    </v-btn>
     <v-dialog v-model="askToChangeOwner" width="auto">
       <v-card
         max-width="400"
@@ -72,6 +77,25 @@
             @click="
               askToChangeOwner = false;
               updatePermission(new_owner.user_email, new_owner.new_permission);
+            "
+          ></v-btn>
+        </template>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="askToDeleteFamilyTree" width="auto">
+      <v-card
+        prepend-icon="mdi-update"
+        text="This Family Tree will be deleted permanently!"
+        title="Are you sure ?"
+      >
+        <template v-slot:actions>
+          <v-btn
+            color="red"
+            class="ms-auto"
+            text="Ok"
+            @click="
+              askToDeleteFamilyTree = false;
+              FamilyStore().deleteFamilyTree(tree_id);
             "
           ></v-btn>
         </template>
@@ -93,6 +117,7 @@ export default {
       new_owner: { user_email: "", new_permission: "" },
       tree_id: this.$route.params.id,
       askToChangeOwner: false,
+      askToDeleteFamilyTree: false,
       loadingTable: false,
       disabledTable: false,
       roles: ["owner", "editor", "viewer", "pending"],

@@ -19,7 +19,7 @@
             height="300"
             alt="Empty Image"
           ></v-img>
-          <v-switch v-model="gender_boolean" color="primary" label="Gender"></v-switch>
+          <v-switch v-model="gender_boolean" color="primary" :label="gender_boolean ? 'Male' : 'Female'"></v-switch>
           <v-text-field
             v-model="member.full_name"
             label="Full Name"
@@ -28,12 +28,37 @@
             :disabled="isDisabledButton"
             required
           ></v-text-field>
-          <!-- <v-text-field
-            v-model="treeInfo.description"
+          <v-text-field
+            v-model="member.job"
+            label="Job"
+            type="text"
+            placeholder="Job"
+          ></v-text-field>
+          <v-text-field
+            v-model="member.description"
             label="Description"
             type="text"
             placeholder="Description"
-          ></v-text-field> -->
+          ></v-text-field>
+          <v-text-field
+            v-model="member.address"
+            label="Address"
+            type="text"
+            placeholder="Address"
+          ></v-text-field>
+          <v-text-field
+            v-model="member.date_of_birth"
+            label="Date of birth"
+            type="date"
+            placeholder="Date of birth"
+            required
+          ></v-text-field>
+          <v-text-field
+            v-model="member.place_of_birth"
+            label="Place of birth"
+            type="text"
+            placeholder="Place of birth"
+          ></v-text-field>
           <v-layout class="d-flex flex-column align-center">
             <v-btn
               type="submit"
@@ -62,18 +87,18 @@ export default {
       member: {
         tree_id: "",
         full_name: "",
-        job: "engineer",
+        job: "Engineer",
         gender: "male",
-        date_of_birth: "1/4/2003",
+        date_of_birth: "2003-04-01",
         place_of_birth: "Quang Nam",
         image: "",
-        description: "Hello everyone",
-        address: "Tam ky, Quang Nam",
+        description: "Hello",
+        address: "25 Doan Ket",
       },
       file: null,
       isDisabledButton: false,
       familyStore: FamilyStore(),
-      gender_boolean: false,
+      gender_boolean: true,
     };
   },
   computed: {

@@ -8,7 +8,7 @@
       >
         <v-card
           class="text-h6 justify-center align-center flex-1-1 d-flex"
-          height="50%"
+          height="fit-content"
           flat
           rounded
         >
@@ -18,15 +18,23 @@
             </div>
 
             <template v-else>
-              <v-avatar
-                :image="
-                  memberStore.image === ''
-                    ? '/dummy_avatar.png'
-                    : memberStore.image
-                "
-                class="mb-2"
-                size="88"
-              ></v-avatar>
+              <v-card variant="flat" class="d-flex flex-column align-center">
+                <v-avatar
+                  :image="
+                    memberStore.image === ''
+                      ? '/dummy_avatar.png'
+                      : memberFormData.image
+                  "
+                  class="mb-2"
+                  size="88"
+                ></v-avatar>
+                <v-file-input
+                  v-model="file"
+                  label="Chọn ảnh"
+                  accept="image/*"
+                  v-if="permissionToEdit"
+                ></v-file-input>
+              </v-card>
 
               <h3 class="text-h5">{{ memberStore.full_name }}</h3>
 
@@ -39,19 +47,52 @@
               <v-divider class="my-4"></v-divider>
 
               <v-text-field
-                :model-value="memberStore.date_of_birth"
+                v-model="memberFormData.full_name"
                 class="mx-auto mb-2"
                 density="compact"
                 max-width="250"
+                prefix="Full Name:"
+                variant="solo"
+                flat
+                hide-details
+                :readonly="!permissionToEdit"
+              ></v-text-field>
+              <v-text-field
+                v-model="memberFormData.job"
+                class="mx-auto mb-2"
+                density="compact"
+                max-width="250"
+                prefix="Job:"
+                variant="solo"
+                flat
+                hide-details
+                :readonly="!permissionToEdit"
+              ></v-text-field>
+              <v-text-field
+                v-model="memberFormData.date_of_birth"
+                class="mx-auto mb-2"
+                density="compact"
+                max-width="250"
+                type="date"
                 prefix="Date Of Birth:"
                 variant="solo"
                 flat
                 hide-details
-                readonly
+                :readonly="!permissionToEdit"
               ></v-text-field>
-
               <v-text-field
-                :model-value="memberStore.address"
+                v-model="memberFormData.place_of_birth"
+                class="mx-auto"
+                density="compact"
+                max-width="250"
+                prefix="Place of birth:"
+                variant="solo"
+                flat
+                hide-details
+                :readonly="!permissionToEdit"
+              ></v-text-field>
+              <v-text-field
+                v-model="memberFormData.address"
                 class="mx-auto mb-2"
                 density="compact"
                 max-width="250"
@@ -59,11 +100,10 @@
                 variant="solo"
                 flat
                 hide-details
-                readonly
+                :readonly="!permissionToEdit"
               ></v-text-field>
-
               <v-text-field
-                :model-value="memberStore.description"
+                v-model="memberFormData.description"
                 class="mx-auto"
                 density="compact"
                 max-width="250"
@@ -71,29 +111,26 @@
                 variant="solo"
                 flat
                 hide-details
-                readonly
+                :readonly="!permissionToEdit"
               ></v-text-field>
-              <v-text-field
-                :model-value="memberStore.married"
-                class="mx-auto"
-                density="compact"
-                max-width="250"
-                prefix="Married:"
-                variant="solo"
-                flat
-                hide-details
-                readonly
-              ></v-text-field>
+              <v-btn
+                v-if="permissionToEdit"
+                @click="updateMemberInformation"
+                :disabled="isDisableUpdateMember"
+                color="primary"
+                class="mt-4"
+                >Update Member Information</v-btn
+              >
+              <v-btn
+                v-if="permissionToEdit"
+                @click="askToDeleteMember = true"
+                :disabled="editMember"
+                color="red"
+                class="mt-4"
+                >Delete Member</v-btn
+              >
             </template>
           </template>
-        </v-card>
-        <v-card
-          class="text-h6 justify-center align-center flex-1-1 d-flex"
-          height="50%"
-          flat
-          rounded
-        >
-          {{ form.parents_relationship }}
         </v-card>
       </v-col>
 
@@ -106,6 +143,7 @@
         >
           <v-card width="100%" height="20%" class="d-flex">
             <v-select
+              :readonly="!permissionToEdit"
               v-model="form.parents_relationship_model"
               :items="filtered_couples"
               :item-props="parentsItemProps"
@@ -122,6 +160,7 @@
             class="d-flex"
           >
             <v-select
+              :readonly="!permissionToEdit"
               v-model="form.wife"
               :items="filtered_unmarried_members"
               :hint="`${form.wife.date_of_birth ?? 'None'}, ${
@@ -143,6 +182,7 @@
             class="d-flex"
           >
             <v-select
+              :readonly="!permissionToEdit"
               v-model="form.husband"
               :items="filtered_unmarried_members"
               :hint="`${form.husband.date_of_birth ?? 'None'}, ${
@@ -159,6 +199,7 @@
           </v-card>
           <v-card width="100%" height="20%" class="d-flex">
             <v-select
+              :readonly="!permissionToEdit"
               multiple
               v-model="form.children"
               :items="filtered_unparents_members"
@@ -170,6 +211,7 @@
             </v-select>
           </v-card>
           <v-btn
+            v-if="permissionToEdit"
             @click="addRelationship"
             :disabled="isDisableUpdateRelationship"
             color="primary"
@@ -177,6 +219,7 @@
             >Update Relationsip</v-btn
           >
           <v-btn
+            v-if="permissionToEdit"
             @click="deleteCouplesRelationship"
             :disabled="isDisableDeleteCouplesRelationship"
             color="primary"
@@ -184,7 +227,8 @@
             >Delete Couples Relationsip</v-btn
           >
           <v-btn
-            @click="deleteParentsRelationship"
+            v-if="permissionToEdit"
+            @click="askToDeleteMember = true"
             :disabled="isDisableDeleteParentsRelationship"
             color="primary"
             class="mt-4"
@@ -193,6 +237,26 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-dialog v-model="askToDeleteMember" width="auto">
+      <v-card
+        max-width="400"
+        prepend-icon="mdi-update"
+        text="This Member and all of its information will be deleted forever from this Family Tree !"
+        title="Are you sure ?"
+      >
+        <template v-slot:actions>
+          <v-btn
+            class="ms-auto"
+            color="red"
+            text="Ok"
+            @click="
+              askToDeleteMember = false;
+              deleteMember();
+            "
+          ></v-btn>
+        </template>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -203,7 +267,10 @@ export default {
   name: "MemberDashboard",
   data() {
     return {
+      askToDeleteMember: false,
+      file: null,
       editRelationship: false,
+      editMember: false,
       member_id: this.$route.params.id,
       unmarried_members: [],
       unparents_members: [],
@@ -217,6 +284,17 @@ export default {
         parents_relationship_model: {},
         parents_relationship: "",
       },
+      memberFormData: {
+        full_name: "",
+        job: "",
+        gender: "",
+        address: "",
+        place_of_birth: "",
+        date_of_birth: "",
+        description: "",
+        image: null,
+      },
+      genderBoolen: true,
     };
   },
   setup() {
@@ -228,8 +306,24 @@ export default {
     "form.parents_relationship_model"(val) {
       this.form.parents_relationship = val?._id || "";
     },
+    file(newFile) {
+      if (newFile) {
+        this.memberFormData.image = URL.createObjectURL(newFile);
+      } else {
+        this.memberFormData.image = this.memberStore.image;
+      }
+    },
+    "genderBoolean"(val) {
+      
+    },
   },
   computed: {
+    permissionToEdit() {
+      return (
+        MemberStore().permission === "editor" ||
+        MemberStore().permission === "owner"
+      );
+    },
     filtered_couples() {
       return this.couples
         .filter((item) => item._id !== this.memberStore.couples_relationship)
@@ -247,6 +341,7 @@ export default {
     },
     isDisableUpdateRelationship() {
       return (
+        !this.permissionToEdit ||
         this.editRelationship ||
         (this.form.husband === this.memberStore.husband &&
           this.form.wife === this.memberStore.wife &&
@@ -257,11 +352,36 @@ export default {
             this.memberStore.parents_relationship)
       );
     },
+
     isDisableDeleteCouplesRelationship() {
-      return this.editRelationship || !this.memberStore.couples_relationship;
+      return (
+        this.editRelationship ||
+        !this.memberStore.couples_relationship ||
+        !this.permissionToEdit
+      );
     },
     isDisableDeleteParentsRelationship() {
-      return this.editRelationship || !this.memberStore.parents_relationship;
+      return (
+        this.editRelationship ||
+        !this.memberStore.parents_relationship ||
+        !this.permissionToEdit
+      );
+    },
+    isDisableUpdateMember() {
+      return (
+        this.editMember ||
+        !this.permissionToEdit ||
+        (this.memberFormData.full_name === this.memberStore.full_name &&
+          this.memberFormData.job === this.memberStore.job &&
+          this.memberFormData.date_of_birth ===
+            this.memberStore.date_of_birth &&
+          this.memberFormData.place_of_birth ===
+            this.memberStore.place_of_birth &&
+          this.memberFormData.address === this.memberStore.address &&
+          this.memberFormData.image === this.memberStore.image &&
+          this.memberFormData.description === this.memberStore.description &&
+          this.memberFormData.gender === this.memberStore.gender)
+      );
     },
     memberStore() {
       return MemberStore();
@@ -297,6 +417,17 @@ export default {
         subtitle: item.date_of_birth + ", " + item.place_of_birth,
         value: item._id,
       };
+    },
+    async updateMemberInformation() {
+      this.editMember = true;
+      await FamilyStore().updateMember(
+        this.member_id,
+        this.memberFormData,
+        this.file
+      );
+      await this.fetchData();
+      this.file = null;
+      this.editMember = false;
     },
     parentsItemProps(item) {
       return {
@@ -350,6 +481,13 @@ export default {
       }
       if (isAdded) await this.fetchData();
     },
+    async deleteMember() {
+      this.editRelationship = true;
+      this.editMember = true;
+      await MemberStore().deleteMember();
+      this.editRelationship = false;
+      this.editMember = false;
+    },
     async deleteCouplesRelationship() {
       let isAdded = false;
       if (this.memberStore.couples_relationship) {
@@ -362,8 +500,6 @@ export default {
     },
     async fetchData() {
       await MemberStore().getMember(this.member_id);
-      // if (MemberStore().tree_id !== FamilyStore().tree_id)
-      //   await FamilyStore().getFamily(MemberStore().tree_id);
       await Promise.all([
         MemberStore().getCouplesRelationship(),
         MemberStore().getParentsRelationship(),
@@ -377,6 +513,15 @@ export default {
           .getCouples()
           .then((data) => (this.couples = data)),
       ]);
+
+      this.memberFormData.full_name = MemberStore().full_name;
+      this.memberFormData.job = MemberStore().job;
+      this.memberFormData.gender = MemberStore().gender;
+      this.memberFormData.address = MemberStore().address;
+      this.memberFormData.place_of_birth = MemberStore().place_of_birth;
+      this.memberFormData.date_of_birth = MemberStore().date_of_birth;
+      this.memberFormData.description = MemberStore().description;
+      this.memberFormData.image = MemberStore().image;
 
       this.form = {
         husband: MemberStore().husband,

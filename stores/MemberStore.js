@@ -1,5 +1,3 @@
-import { useCookie } from "#app";
-
 export const MemberStore = defineStore("member", {
   state: () => ({
     member_id: "",
@@ -26,6 +24,8 @@ export const MemberStore = defineStore("member", {
     children: [],
     father: { _id: "", full_name: "None" },
     mother: { _id: "", full_name: "None" },
+
+    permission: "",
   }),
   actions: {
     async getMember(member_id) {
@@ -59,6 +59,7 @@ export const MemberStore = defineStore("member", {
           this.alive = data.value?.member.alive ?? true;
           this.death_id = data.value?.member.death_id;
           this.achievements = data.value?.member.achievements ?? [];
+          this.permission = data.value?.permission;
         } else {
           // alert("Có lỗi trong lúc lấy Member Info. Thử lại sau");
           navigateTo("/");
@@ -321,6 +322,28 @@ export const MemberStore = defineStore("member", {
       } catch (err) {
         console.error("Delete Parents Relationship thất bại:", err);
         // alert("Có lỗi trong lúc Delete Parents Relationship. Thử lại sau");
+      }
+    },
+    async deleteMember() {
+      try {
+        const { useFetchApi } = useApi();
+        const { data, error } = await useFetchApi(`/api/member/delete`, {
+          method: "POST",
+          body: JSON.stringify({ member_id: this.member_id }),
+        });
+
+        if (error.value) {
+          throw new Error(error.value.message);
+        }
+
+        if (data.value?.success) {
+          navigateTo(`/family/${this.tree_id}`);
+        } else {
+          throw new Error(data.value?.message);
+        }
+      } catch (err) {
+        console.error("Delete Member thất bại:", err);
+        alert("Có lỗi trong lúc Delete Member. Thử lại sau");
       }
     },
   },

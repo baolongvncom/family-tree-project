@@ -1,5 +1,3 @@
-import { useCookie } from "#app";
-
 export const TreeInfoStore = defineStore("treeInfo", {
   state: () => ({
     treeInfos: [],

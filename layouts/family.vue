@@ -24,14 +24,15 @@
           :to="`/family/${$route.params.id}`"
         ></v-list-item>
         <v-list-item
+          :disabled="FamilyStore().permission !== 'owner' && FamilyStore().permission !== 'editor'"
           prepend-icon="mdi-account-box"
           title="Tạo Member"
           :to="`/family/add-${$route.params.id}`"
         ></v-list-item>
         <v-list-item
-          v-if="FamilyStore().permission === 'owner'"
+          :disabled="FamilyStore().permission !== 'owner'"
           prepend-icon="mdi-account-box"
-          title="Permissions Management"
+          title="Family Tree Management"
           :to="`/family/permissions-${$route.params.id}`"
         ></v-list-item>
       </v-list>
