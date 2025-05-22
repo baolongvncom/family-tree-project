@@ -38,8 +38,6 @@
 
               <h3 class="text-h5">{{ memberStore.full_name }}</h3>
 
-              <div class="text-medium-emphasis">{{ memberStore.gender }}</div>
-
               <div class="text-medium-emphasis font-weight-bold">
                 {{ memberStore.address }}
               </div>
@@ -57,8 +55,23 @@
                 hide-details
                 :readonly="!permissionToEdit"
               ></v-text-field>
-              <v-text-field
+              <v-card flat class="mx-auto mb-2 d-flex justify-center">
+                <v-switch
+                  :disabled="memberStore.married"
+                  v-model="memberFormData.gender"
+                  :label="memberFormData.gender"
+                  false-value="female"
+                  true-value="male"
+                  :hide-details="!memberStore.married"
+                  hint="You cannot change gender while being married"
+                  persistent-hint
+                ></v-switch>
+              </v-card>
+              <v-autocomplete
                 v-model="memberFormData.job"
+                :items="MemberStore().jobs"
+                item-title="name"
+                item-value="_id"
                 class="mx-auto mb-2"
                 density="compact"
                 max-width="250"
@@ -67,7 +80,7 @@
                 flat
                 hide-details
                 :readonly="!permissionToEdit"
-              ></v-text-field>
+              ></v-autocomplete>
               <v-text-field
                 v-model="memberFormData.date_of_birth"
                 class="mx-auto mb-2"
@@ -80,17 +93,20 @@
                 hide-details
                 :readonly="!permissionToEdit"
               ></v-text-field>
-              <v-text-field
+              <v-autocomplete
                 v-model="memberFormData.place_of_birth"
+                :items="MemberStore().hometowns"
+                item-title="name"
+                item-value="_id"
                 class="mx-auto"
                 density="compact"
-                max-width="250"
+                max-width="270"
                 prefix="Place of birth:"
                 variant="solo"
                 flat
                 hide-details
                 :readonly="!permissionToEdit"
-              ></v-text-field>
+              ></v-autocomplete>
               <v-text-field
                 v-model="memberFormData.address"
                 class="mx-auto mb-2"
@@ -142,7 +158,7 @@
           rounded
         >
           <v-card width="100%" height="20%" class="d-flex">
-            <v-select
+            <v-autocomplete
               :readonly="!permissionToEdit"
               v-model="form.parents_relationship_model"
               :items="filtered_couples"
@@ -151,7 +167,7 @@
               width="100%"
               persistent-hint
               return-object
-            ></v-select>
+            ></v-autocomplete>
           </v-card>
           <v-card
             v-if="memberStore.gender === 'male'"
@@ -159,7 +175,7 @@
             height="20%"
             class="d-flex"
           >
-            <v-select
+            <v-autocomplete
               :readonly="!permissionToEdit"
               v-model="form.wife"
               :items="filtered_unmarried_members"
@@ -173,15 +189,23 @@
               persistent-hint
               return-object
             >
-            </v-select>
+            </v-autocomplete>
+            <v-text-field
+              v-model="form.date_of_marriage"
+              label="Date of marriage"
+              type="date"
+              placeholder="Date of marriage"
+              required
+              :readonly="!permissionToEdit"
+            ></v-text-field>
           </v-card>
           <v-card
             v-if="memberStore.gender === 'female'"
             width="100%"
             height="20%"
-            class="d-flex"
+            class="d-flex flex-row"
           >
-            <v-select
+            <v-autocomplete
               :readonly="!permissionToEdit"
               v-model="form.husband"
               :items="filtered_unmarried_members"
@@ -195,10 +219,23 @@
               persistent-hint
               return-object
             >
-            </v-select>
+            </v-autocomplete>
+            <v-text-field
+              v-model="form.date_of_marriage"
+              label="Date of marriage"
+              type="date"
+              placeholder="Date of marriage"
+              required
+              :readonly="!permissionToEdit"
+            ></v-text-field>
           </v-card>
-          <v-card width="100%" height="20%" class="d-flex">
-            <v-select
+          <v-card
+            v-if="form.husband._id || form.wife._id"
+            width="100%"
+            height="20%"
+            class="d-flex"
+          >
+            <v-autocomplete
               :readonly="!permissionToEdit"
               multiple
               v-model="form.children"
@@ -208,7 +245,7 @@
               width="100%"
               chips
             >
-            </v-select>
+            </v-autocomplete>
           </v-card>
           <v-btn
             v-if="permissionToEdit"
@@ -281,15 +318,16 @@ export default {
         children: [],
         father: { _id: "", full_name: "None" },
         mother: { _id: "", full_name: "None" },
+        date_of_marriage: null,
         parents_relationship_model: {},
         parents_relationship: "",
       },
       memberFormData: {
         full_name: "",
-        job: "",
+        job: null,
         gender: "",
         address: "",
-        place_of_birth: "",
+        place_of_birth: null,
         date_of_birth: "",
         description: "",
         image: null,
@@ -313,9 +351,7 @@ export default {
         this.memberFormData.image = this.memberStore.image;
       }
     },
-    "genderBoolean"(val) {
-      
-    },
+    genderBoolean(val) {},
   },
   computed: {
     permissionToEdit() {
@@ -346,8 +382,10 @@ export default {
         (this.form.husband === this.memberStore.husband &&
           this.form.wife === this.memberStore.wife &&
           isEqual(this.form.children, this.memberStore.children) &&
-          this.form.father === this.memberStore.father &&
-          this.form.mother === this.memberStore.mother &&
+          (this.form.father === this.memberStore.father ||
+            this.form.date_of_marriage == this.memberStore.date_of_marriage) &&
+          (this.form.mother === this.memberStore.mother ||
+            this.form.date_of_marriage == this.memberStore.date_of_marriage) &&
           this.form.parents_relationship ===
             this.memberStore.parents_relationship)
       );
@@ -450,7 +488,8 @@ export default {
           await this.memberStore.deleteCouplesRelationship();
           await this.memberStore.addCoupleRelationship(
             partner_id,
-            this.form.children
+            this.form.children,
+            this.form.date_of_marriage
           );
 
           isAdded = true;
@@ -529,6 +568,7 @@ export default {
         children: MemberStore().children,
         father: MemberStore().father,
         mother: MemberStore().mother,
+        date_of_marriage: MemberStore().date_of_marriage,
       };
       this.form.parents_relationship = this.memberStore.parents_relationship;
       this.form.parents_relationship_model = this.filtered_couples.find(

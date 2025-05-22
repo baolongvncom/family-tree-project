@@ -28,7 +28,7 @@
           :date="treeInfo?.date"
           :image="treeInfo?.image"
           :url="`/family/${treeInfo?._id}`"
-          :role="treeInfo?.role?.[UserStore().email] ?? 'guest'"
+          :role="treeInfo?.role_name ?? 'guest'"
           class="mt-4 w-100"
           @ask="askToView"
         >

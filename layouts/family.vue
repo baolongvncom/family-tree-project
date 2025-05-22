@@ -7,7 +7,7 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn to="/" variant="outlined"> Quay về Family Dashboard </v-btn>
+      <v-btn to="/" variant="outlined"> Return to Family Dashboard </v-btn>
     </v-app-bar>
 
     <v-navigation-drawer
@@ -24,10 +24,23 @@
           :to="`/family/${$route.params.id}`"
         ></v-list-item>
         <v-list-item
-          :disabled="FamilyStore().permission !== 'owner' && FamilyStore().permission !== 'editor'"
+          :disabled="
+            FamilyStore().permission !== 'owner' &&
+            FamilyStore().permission !== 'editor'
+          "
           prepend-icon="mdi-account-box"
-          title="Tạo Member"
+          title="Create New Member"
           :to="`/family/add-${$route.params.id}`"
+        ></v-list-item>
+        <v-list-item
+          prepend-icon="mdi-file-chart-outline"
+          title="Member Report"
+          :to="`/family/member-report-${$route.params.id}`"
+        ></v-list-item>
+        <v-list-item
+          prepend-icon="mdi-trophy-variant-outline"
+          title="Achievement Report"
+          :to="`/family/achievement-report-${$route.params.id}`"
         ></v-list-item>
         <v-list-item
           :disabled="FamilyStore().permission !== 'owner'"
@@ -39,7 +52,7 @@
 
       <template v-slot:append>
         <div class="pa-2">
-          <v-btn block @click="handleSignOut"> Đăng xuất </v-btn>
+          <v-btn block @click="handleSignOut"> Sign Out </v-btn>
         </div>
       </template>
     </v-navigation-drawer>

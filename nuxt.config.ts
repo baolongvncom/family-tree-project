@@ -34,7 +34,7 @@ export default defineNuxtConfig({
   },
   vuetify: {
     moduleOptions: {
-      labs: true, // Bật hỗ trợ các component thử nghiệm như VTreeview
+      labs: true,
     }
   }
 })

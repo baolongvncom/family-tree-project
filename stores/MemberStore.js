@@ -24,8 +24,11 @@ export const MemberStore = defineStore("member", {
     children: [],
     father: { _id: "", full_name: "None" },
     mother: { _id: "", full_name: "None" },
+    date_of_marriage: null,
 
     permission: "",
+    jobs: [],
+    hometowns: [],
   }),
   actions: {
     async getMember(member_id) {
@@ -60,6 +63,8 @@ export const MemberStore = defineStore("member", {
           this.death_id = data.value?.member.death_id;
           this.achievements = data.value?.member.achievements ?? [];
           this.permission = data.value?.permission;
+          this.jobs = data.value?.jobs;
+          this.hometowns = data.value?.hometowns;
         } else {
           // alert("Có lỗi trong lúc lấy Member Info. Thử lại sau");
           navigateTo("/");
@@ -70,7 +75,7 @@ export const MemberStore = defineStore("member", {
         navigateTo("/");
       }
     },
-    async addCoupleRelationship(partner_id, children) {
+    async addCoupleRelationship(partner_id, children, date_of_marriage) {
       try {
         const { useFetchApi } = useApi();
         const { data, error } = await useFetchApi(
@@ -81,6 +86,7 @@ export const MemberStore = defineStore("member", {
               member_id: this.member_id,
               partner_id,
               children,
+              date_of_marriage,
             }),
           }
         );
@@ -150,7 +156,11 @@ export const MemberStore = defineStore("member", {
       try {
         const { useFetchApi } = useApi();
         const { data, error } = await useFetchApi(`/api/member/getunparents`, {
-          method: "GET",
+          method: "POST",
+          body: JSON.stringify({
+            member_id: this.member_id,
+            tree_id: this.tree_id,
+          }),
         });
 
         if (error.value) {
@@ -258,11 +268,13 @@ export const MemberStore = defineStore("member", {
             this.wife = data.value.relationship.data.wife;
             this.children = data.value.relationship.data.children;
             this.couples_relationship = data.value.relationship._id;
+            this.date_of_marriage = data.value.relationship.data.date_of_marriage;
           } else {
             this.husband = { _id: "", full_name: "None" };
             this.wife = { _id: "", full_name: "None" };
             this.children = [];
             this.couples_relationship = data.value.relationship._id;
+            this.date_of_marriage = null;
           }
         } else {
           throw new Error(data.value?.message);

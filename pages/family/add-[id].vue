@@ -19,7 +19,11 @@
             height="300"
             alt="Empty Image"
           ></v-img>
-          <v-switch v-model="gender_boolean" color="primary" :label="gender_boolean ? 'Male' : 'Female'"></v-switch>
+          <v-switch
+            v-model="gender_boolean"
+            color="primary"
+            :label="gender_boolean ? 'Male' : 'Female'"
+          ></v-switch>
           <v-text-field
             v-model="member.full_name"
             label="Full Name"
@@ -28,12 +32,14 @@
             :disabled="isDisabledButton"
             required
           ></v-text-field>
-          <v-text-field
+          <v-autocomplete
             v-model="member.job"
+            :items="jobs"
             label="Job"
-            type="text"
+            item-title="name"
+            item-value="_id"
             placeholder="Job"
-          ></v-text-field>
+          ></v-autocomplete>
           <v-text-field
             v-model="member.description"
             label="Description"
@@ -53,12 +59,14 @@
             placeholder="Date of birth"
             required
           ></v-text-field>
-          <v-text-field
+          <v-autocomplete
             v-model="member.place_of_birth"
             label="Place of birth"
-            type="text"
+            :items="hometowns"
+            item-value="_id"
+            item-title="name"
             placeholder="Place of birth"
-          ></v-text-field>
+          ></v-autocomplete>
           <v-layout class="d-flex flex-column align-center">
             <v-btn
               type="submit"
@@ -83,14 +91,16 @@ export default {
   },
   data() {
     return {
+      jobs: [],
+      hometowns: [],
       imageUrl: null,
       member: {
         tree_id: "",
         full_name: "",
-        job: "Engineer",
+        job: null,
         gender: "male",
-        date_of_birth: "2003-04-01",
-        place_of_birth: "Quang Nam",
+        date_of_birth: new Date().toISOString().split("T")[0],
+        place_of_birth: null,
         image: "",
         description: "Hello",
         address: "25 Doan Ket",
@@ -115,8 +125,8 @@ export default {
       }
     },
     gender_boolean(val) {
-      this.member.gender = val ? 'female' : 'male';
-    }
+      this.member.gender = val ? "male" : "female";
+    },
   },
   methods: {
     async addFamilyMember() {
@@ -128,6 +138,24 @@ export default {
         this.isDisabledButton = false;
       }
     },
+  },
+  async created() {
+    try {
+      const { fetchApi } = useApi();
+      const data = await fetchApi(`/api/treeinfo/getJobAndHometown`, {
+        method: "GET",
+      });
+
+      if (data.success) {
+        this.jobs = data.jobs;
+        this.hometowns = data.hometowns;
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (err) {
+      console.error("Get Jobs and Hometown thất bại:", err.message);
+      navigateTo(`/family/${this.tree_id}`);
+    }
   },
 };
 </script>

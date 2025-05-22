@@ -14,7 +14,7 @@
             :date="treeInfos[(n - 1) * 6 + (j - 1)].date"
             :image="treeInfos[(n - 1) * 6 + (j - 1)].image"
             :url="`/family/${treeInfos[(n - 1) * 6 + (j - 1)]._id}`"
-            :role="treeInfos[(n - 1) * 6 + (j - 1)].role"
+            :role="treeInfos[(n - 1) * 6 + (j - 1)].role_name"
           ></tree-info>
         </v-col>
       </template>

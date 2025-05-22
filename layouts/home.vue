@@ -21,19 +21,19 @@
         ></v-list-item>
         <v-list-item
           prepend-icon="mdi-account-box"
-          title="Tạo hoặc tìm kiếm Family Tree"
+          title="Create or Search Family Tree"
           to="/createorsearch"
         ></v-list-item>
         <v-list-item
           to="/account"
           prepend-icon="mdi-gavel"
-          title="Tài khoản"
+          title="Account"
         ></v-list-item>
       </v-list>
 
       <template v-slot:append>
         <div class="pa-2">
-          <v-btn block @click="handleSignOut"> Đăng xuất </v-btn>
+          <v-btn block @click="handleSignOut"> Sign Out </v-btn>
         </div>
       </template>
     </v-navigation-drawer>

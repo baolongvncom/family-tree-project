@@ -92,7 +92,7 @@ export const FamilyStore = defineStore("family", {
         });
 
         if (data.success) {
-          return data.permissions;
+          return {permissions: data.permissions, permissionData: data.permissionData};
         } else {
           throw new Error(data.message);
         }
