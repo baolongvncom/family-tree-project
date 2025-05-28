@@ -5,7 +5,7 @@
         <v-container class="fill-height d-flex align-center justify-end">
           <v-card rounded="xl" width="50%" class="elevation-12 mr-16">
             <v-toolbar dark color="primary">
-              <v-toolbar-title>Biểu mẫu đăng kí</v-toolbar-title>
+              <v-toolbar-title>Sign Up Form</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
               <form ref="form" @submit.prevent="signup()">
@@ -28,9 +28,9 @@
                 <v-text-field
                   v-model="password"
                   name="password"
-                  label="Mật khẩu"
+                  label="Password"
                   type="password"
-                  placeholder="Mật khẩu"
+                  placeholder="Password"
                   required
                 ></v-text-field>
                 <v-layout class="d-flex flex-column align-center ga-2">
@@ -40,13 +40,13 @@
                     color="primary"
                     value="log in"
                     :disabled="isDisabledButton"
-                    >Đăng kí</v-btn
+                    >Sign Up</v-btn
                   >
                   <NuxtLink
                     to="/signin"
                     class="text-primary text-decoration-underline"
                   >
-                    Đã có tài khoản? Tới đăng nhập
+                    Already have an Account? Sign In
                   </NuxtLink>
                 </v-layout>
               </form>

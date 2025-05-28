@@ -37,11 +37,38 @@ export const UserStore = defineStore("user", {
           // Chuyển hướng tới trang chủ
           return navigateTo("/");
         } else {
-          alert("Đăng ký thất bại! Vui lòng kiểm tra lại email hoặc mật khẩu.");
+          alert("Fail to Sign up! Please check your email or password again.");
         }
       } catch (err) {
-        console.error("Đăng ký thất bại:", err);
-        alert("Đăng ký thất bại! Vui lòng thử lại.");
+        console.error("Fail to Sign up:", err);
+        alert("Fail to Sign up! Try again.");
+      }
+    },
+    async changePassword(email, old_password, new_password) {
+      try {
+        const config = useRuntimeConfig();
+        const { data, error } = await useFetch(
+          `${config.public.apiBase}/api/change-password`,
+          {
+            method: "POST",
+            body: JSON.stringify({ email, old_password, new_password }),
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        if (error.value) {
+          throw new Error(error.value.message);
+        }
+
+        if (data.value?.success) {
+          alert("Change Password Successfully!");
+          return navigateTo("/signin");
+        } else {
+          alert("Change Password Unsuccessfully");
+        }
+      } catch (err) {
+        console.error("Change Password Unsuccessfully:", err);
+        alert("Error While Changing Password.");
       }
     },
     signOut() {
@@ -88,13 +115,11 @@ export const UserStore = defineStore("user", {
           // Chuyển hướng tới trang chủ
           return navigateTo("/");
         } else {
-          alert(
-            "Đăng nhập thất bại! Vui lòng kiểm tra lại email hoặc mật khẩu."
-          );
+          alert("Fail to Sign in! Please check your email or password again.");
         }
       } catch (err) {
-        console.error("Đăng nhập thất bại:", err);
-        alert("Đăng nhập thất bại! Vui lòng thử lại.");
+        console.error("Fail to Sign in:", err);
+        alert("Fail to Sign in! Try Again.");
       }
     },
   },
