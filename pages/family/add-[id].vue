@@ -103,7 +103,7 @@ export default {
         place_of_birth: null,
         image: "",
         description: "Hello",
-        address: "25 Doan Ket",
+        address: "",
       },
       file: null,
       isDisabledButton: false,
@@ -149,6 +149,8 @@ export default {
       if (data.success) {
         this.jobs = data.jobs;
         this.hometowns = data.hometowns;
+        this.member.job = data.jobs.find(h => h.name === "Không")?._id || null;
+        this.member.place_of_birth = data.hometowns.find(h => h.name === "Không rõ")?._id || null;
       } else {
         throw new Error(data.message);
       }
