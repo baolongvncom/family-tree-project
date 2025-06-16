@@ -58,7 +58,7 @@
         v-model="member_fullname"
         class="mx-auto"
         density="compact"
-        max-width="250"
+        width="320"
         prefix="Fullname:"
         variant="solo"
         flat

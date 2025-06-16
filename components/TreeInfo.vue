@@ -2,19 +2,32 @@
   <v-card class="mx-auto" max-width="270" width="fit-content">
     <v-img
       height="200"
-      :src="image ? image : 'https://cdn.vuetifyjs.com/images/cards/sunshine.jpg'"
+      :src="
+        image ? image : 'https://cdn.vuetifyjs.com/images/cards/sunshine.jpg'
+      "
       cover
     ></v-img>
 
     <v-card-title> {{ name }} </v-card-title>
 
-    <v-card-subtitle> {{ date }} </v-card-subtitle>
+    <v-card-subtitle> {{ formattedDate }} </v-card-subtitle>
 
     <v-card-actions>
       <v-card-subtitle> {{ role }} </v-card-subtitle>
-      <v-btn  v-if="role === 'owner' || role === 'editor' || role === 'viewer'" :to="url" color="orange-lighten-2" text="Explore"></v-btn>
+      <v-btn
+        v-if="role === 'owner' || role === 'editor' || role === 'viewer'"
+        :to="url"
+        color="orange-lighten-2"
+        text="Explore"
+      ></v-btn>
 
-      <v-btn :disabled="role === 'pending'" v-else @click="$emit('ask')" color="primary" text="Ask to View"></v-btn>
+      <v-btn
+        :disabled="role === 'pending'"
+        v-else
+        @click="$emit('ask')"
+        color="primary"
+        text="Ask to View"
+      ></v-btn>
 
       <v-btn
         :icon="show ? 'mdi-chevron-up' : 'mdi-chevron-down'"
@@ -63,7 +76,21 @@ export default {
     role: {
       type: String,
       default: "guest",
-    }
+    },
+  },
+  computed: {
+    formattedDate() {
+      const options = {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Ho_Chi_Minh",
+      };
+      return new Date(this.date).toLocaleString("en-GB", options);
+    },
   },
 };
 </script>

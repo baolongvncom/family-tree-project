@@ -16,8 +16,10 @@
                   label="Email"
                   type="email"
                   placeholder="Email"
-                  :hide-details="isDisabledEmailButton"
-                  messages="Invalid Email Format"
+                  :error="isDisabledEmailButton"
+                  :error-messages="
+                    isDisabledEmailButton ? 'Invalid Email Format' : ''
+                  "
                   required
                 ></v-text-field>
                 <v-text-field
@@ -107,7 +109,8 @@ export default {
       );
     },
     isDisabledEmailButton() {
-      return !this.email.includes("@");
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return !emailRegex.test(this.email);
     },
     checkPasswordDuplica() {
       return this.new_password == this.new_password_duplica;
@@ -115,7 +118,11 @@ export default {
   },
   methods: {
     async changePassword() {
-      await this.userStore.changePassword(this.email, this.old_password, this.new_password);
+      await this.userStore.changePassword(
+        this.email,
+        this.old_password,
+        this.new_password
+      );
     },
     isDisabledPasswordButton(password) {
       return password.length < 6 || password.length > 9;

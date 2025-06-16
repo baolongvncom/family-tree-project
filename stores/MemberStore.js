@@ -112,7 +112,10 @@ export const MemberStore = defineStore("member", {
       try {
         const { useFetchApi } = useApi();
         const { data, error } = await useFetchApi(`/api/member/getunmarried`, {
-          method: "GET",
+          method: "POST",
+          body: JSON.stringify({
+            tree_id: this.tree_id,
+          }),
         });
 
         if (error.value) {
@@ -134,7 +137,10 @@ export const MemberStore = defineStore("member", {
       try {
         const { useFetchApi } = useApi();
         const { data, error } = await useFetchApi(`/api/member/getcouples`, {
-          method: "GET",
+          method: "POST",
+          body: JSON.stringify({
+            tree_id: this.tree_id,
+          }),
         });
 
         if (error.value) {
@@ -268,7 +274,8 @@ export const MemberStore = defineStore("member", {
             this.wife = data.value.relationship.data.wife;
             this.children = data.value.relationship.data.children;
             this.couples_relationship = data.value.relationship._id;
-            this.date_of_marriage = data.value.relationship.data.date_of_marriage;
+            this.date_of_marriage =
+              data.value.relationship.data.date_of_marriage;
           } else {
             this.husband = { _id: "", full_name: "None" };
             this.wife = { _id: "", full_name: "None" };

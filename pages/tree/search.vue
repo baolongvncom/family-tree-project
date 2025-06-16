@@ -2,7 +2,7 @@
   <v-container fluid class="d-flex fill-height align-center justify-center">
     <v-card rounded="xl" width="50%" class="elevation-12">
       <v-toolbar dark color="primary">
-        <v-toolbar-title>Tạo Family Tree</v-toolbar-title>
+        <v-toolbar-title>Create Family Tree</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-text-field

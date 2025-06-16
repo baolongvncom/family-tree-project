@@ -48,7 +48,7 @@
                 v-model="memberFormData.full_name"
                 class="mx-auto mb-2"
                 density="compact"
-                max-width="250"
+                max-width="320"
                 prefix="Full Name:"
                 variant="solo"
                 flat
@@ -85,7 +85,7 @@
                 v-model="memberFormData.date_of_birth"
                 class="mx-auto mb-2"
                 density="compact"
-                max-width="250"
+                max-width="300"
                 type="date"
                 prefix="Date Of Birth:"
                 variant="solo"
@@ -179,19 +179,19 @@
               :readonly="!permissionToEdit"
               v-model="form.wife"
               :items="filtered_unmarried_members"
-              :hint="`${form.wife.date_of_birth ?? 'None'}, ${
-                form.wife.place_of_birth ?? 'None'
+              :hint="`${formattedDate(form.wife.date_of_birth) ?? 'None'}, ${
+                getHometownName(form.wife.place_of_birth) ?? 'None'
               }`"
               item-title="full_name"
-              item-value="_id"
               label="Select Your Wife"
-              width="100%"
+              width="70%"
               persistent-hint
               return-object
             >
             </v-autocomplete>
             <v-text-field
               v-model="form.date_of_marriage"
+              :disabled="!form.wife._id"
               label="Date of marriage"
               type="date"
               placeholder="Date of marriage"
@@ -209,13 +209,12 @@
               :readonly="!permissionToEdit"
               v-model="form.husband"
               :items="filtered_unmarried_members"
-              :hint="`${form.husband.date_of_birth ?? 'None'}, ${
-                form.husband.place_of_birth ?? 'None'
+              :hint="`${formattedDate(form.husband.date_of_birth) ?? 'None'}, ${
+                getHometownName(form.husband.place_of_birth) ?? 'None'
               }`"
               item-title="full_name"
-              item-value="_id"
               label="Select Your Husband"
-              width="100%"
+              width="70%"
               persistent-hint
               return-object
             >
@@ -224,6 +223,7 @@
               v-model="form.date_of_marriage"
               label="Date of marriage"
               type="date"
+              :disabled="!form.husband._id"
               placeholder="Date of marriage"
               required
               :readonly="!permissionToEdit"
@@ -351,7 +351,6 @@ export default {
         this.memberFormData.image = this.memberStore.image;
       }
     },
-    genderBoolean(val) {},
   },
   computed: {
     permissionToEdit() {
@@ -382,10 +381,9 @@ export default {
         (this.form.husband === this.memberStore.husband &&
           this.form.wife === this.memberStore.wife &&
           isEqual(this.form.children, this.memberStore.children) &&
-          (this.form.father === this.memberStore.father ||
-            this.form.date_of_marriage == this.memberStore.date_of_marriage) &&
-          (this.form.mother === this.memberStore.mother ||
-            this.form.date_of_marriage == this.memberStore.date_of_marriage) &&
+          isEqual(this.form.father, this.memberStore.father) &&
+          isEqual(this.form.mother, this.memberStore.mother) &&
+          this.form.date_of_marriage === this.memberStore.date_of_marriage &&
           this.form.parents_relationship ===
             this.memberStore.parents_relationship)
       );
@@ -455,6 +453,20 @@ export default {
         subtitle: item.date_of_birth + ", " + item.place_of_birth,
         value: item._id,
       };
+    },
+    getHometownName(id) {
+      const hometown = MemberStore().hometowns.find((h) => h._id === id);
+      return hometown?.name || null;
+    },
+    formattedDate(date) {
+      if (!date) return null;
+      const options = {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        timeZone: "Asia/Ho_Chi_Minh",
+      };
+      return new Date(date).toLocaleString("en-GB", options);
     },
     async updateMemberInformation() {
       this.editMember = true;

@@ -33,11 +33,6 @@
           title="Death"
           :to="`/member/death-${$route.params.id}`"
         ></v-list-item>
-        <!-- <v-list-item
-          prepend-icon="mdi-account-box"
-          title="Tạo Member"
-          :to="`/member/add-${$route.params.id}`"
-        ></v-list-item> -->
       </v-list>
 
       <template v-slot:append>

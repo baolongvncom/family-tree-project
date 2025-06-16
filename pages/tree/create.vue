@@ -45,7 +45,7 @@ export default {
   <v-container fluid class="d-flex fill-height align-center justify-center">
     <v-card rounded="xl" width="50%" class="elevation-12">
       <v-toolbar dark color="primary">
-        <v-toolbar-title>Tạo Family Tree</v-toolbar-title>
+        <v-toolbar-title>Create new Family Tree</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <form @submit.prevent="addTreeInfo">
@@ -81,7 +81,7 @@ export default {
               class="mt-4"
               color="primary"
               :disabled="isButtonDisabled"
-              >Tạo Family Tree</v-btn
+              >Create Family Tree</v-btn
             >
           </v-layout>
         </form>

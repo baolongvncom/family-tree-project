@@ -3,10 +3,21 @@
     <v-app-bar color="primary">
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-app-bar-title>{{ FamilyStore().family_name }}</v-app-bar-title>
-
+      
+      <div class="mr-4" :style="{ fontSize: '20px', fontWeight: 'bold' }">
+        {{ FamilyStore().family_name }}
+      </div>
+      <v-tooltip
+        location="bottom"
+        text="Share this code so others can find this tree."
+      >
+        <template v-slot:activator="{ props }">
+          <v-card class="pa-1" v-bind="props" :style="{ fontSize: '16px' }">
+            {{ FamilyStore().code }}
+          </v-card>
+        </template>
+      </v-tooltip>
       <v-spacer></v-spacer>
-
       <v-btn to="/" variant="outlined"> Return to Family Dashboard </v-btn>
     </v-app-bar>
 
