@@ -103,7 +103,7 @@ export default {
         place_of_birth: null,
         image: "",
         description: "Hello",
-        address: "",
+        address: "Unknown",
       },
       file: null,
       isDisabledButton: false,
