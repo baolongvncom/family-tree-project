@@ -102,7 +102,7 @@ export default {
         date_of_birth: new Date().toISOString().split("T")[0],
         place_of_birth: null,
         image: "",
-        description: "Hello",
+        description: "None",
         address: "Unknown",
       },
       file: null,

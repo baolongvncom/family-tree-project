@@ -253,7 +253,7 @@
             :disabled="isDisableUpdateRelationship"
             color="primary"
             class="mt-4"
-            >Update Relationsip</v-btn
+            >Update Relationship</v-btn
           >
           <v-btn
             v-if="permissionToEdit"
@@ -261,7 +261,7 @@
             :disabled="isDisableDeleteCouplesRelationship"
             color="primary"
             class="mt-4"
-            >Delete Couples Relationsip</v-btn
+            >Delete Couples Relationship</v-btn
           >
           <v-btn
             v-if="permissionToEdit"
@@ -269,7 +269,7 @@
             :disabled="isDisableDeleteParentsRelationship"
             color="primary"
             class="mt-4"
-            >Delete Parents Relationsip</v-btn
+            >Delete Parents Relationship</v-btn
           >
         </v-card>
       </v-col>
