@@ -18,7 +18,6 @@ export const MemberStore = defineStore("member", {
     alive: true,
     death_id: "",
     achievements: [],
-
     husband: { _id: "", full_name: "None" },
     wife: { _id: "", full_name: "None" },
     children: [],

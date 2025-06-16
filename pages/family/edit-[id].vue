@@ -2,40 +2,75 @@
 export default {
   setup() {
     definePageMeta({
-      layout: "home",
+      layout: "family",
     });
   },
   data() {
     return {
-      imageUrl: null,
-      treeInfo: { name: "", image: "", description: "", role: {} },
+      treeInfo: { name: "", image: "", description: "" },
       file: null,
       isDisabledButton: false,
     };
   },
   computed: {
     isButtonDisabled() {
-      return this.isDisabledButton || !this.treeInfo.name.trim();
-    },
-  },
-  watch: {
-    file(newFile) {
-      if (newFile) {
-        this.imageUrl = URL.createObjectURL(newFile);
-      } else {
-        this.imageUrl = null;
-      }
+      return (
+        !this.isDisabledButton &&
+        this.treeInfo.name === FamilyStore().family_name &&
+        this.treeInfo.image === FamilyStore().image &&
+        this.treeInfo.description === FamilyStore().description
+      );
     },
   },
   methods: {
-    async addTreeInfo() {
+    async updateTreeInfo() {
       this.isDisabledButton = true;
       try {
-        await TreeInfoStore().addTreeInfo(this.treeInfo, this.file);
+        await FamilyStore().updateFamily(this.treeInfo, this.file);
       } finally {
         this.isDisabledButton = false;
       }
     },
+  },
+  created() {
+    // Watch file
+    watch(
+      () => this.file,
+      (newFile) => {
+        if (newFile) {
+          this.treeInfo.image = URL.createObjectURL(newFile);
+        } else {
+          this.treeInfo.image = FamilyStore().image;
+        }
+      },
+      { immediate: true }
+    );
+    // Watch name
+    watch(
+      () => FamilyStore().family_name,
+      (newVal) => {
+        this.treeInfo.name = newVal;
+      },
+      { immediate: true }
+    );
+
+    // Watch description
+    watch(
+      () => FamilyStore().description,
+      (newVal) => {
+        this.treeInfo.description = newVal;
+      },
+      { immediate: true }
+    );
+
+    // Watch image
+    watch(
+      () => FamilyStore().image,
+      (newVal) => {
+        this.treeInfo.image = newVal;
+      },
+      { immediate: true }
+    );
   },
 };
 </script>
@@ -44,10 +79,10 @@ export default {
   <v-container fluid class="d-flex fill-height align-center justify-center">
     <v-card rounded="xl" width="50%" class="elevation-12">
       <v-toolbar dark color="primary">
-        <v-toolbar-title>Create new Family Tree</v-toolbar-title>
+        <v-toolbar-title>Update Family Tree Information</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
-        <form @submit.prevent="addTreeInfo">
+        <form @submit.prevent="updateTreeInfo">
           <v-file-input
             v-model="file"
             label="Chọn ảnh"
@@ -55,7 +90,7 @@ export default {
           ></v-file-input>
 
           <v-img
-            :src="imageUrl"
+            :src="treeInfo.image"
             lazy-src="/family-tree.png"
             height="300"
             alt="Empty Image"
@@ -80,7 +115,7 @@ export default {
               class="mt-4"
               color="primary"
               :disabled="isButtonDisabled"
-              >Create Family Tree</v-btn
+              >Update Family Tree Information</v-btn
             >
           </v-layout>
         </form>

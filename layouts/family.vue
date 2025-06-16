@@ -55,6 +55,12 @@
         ></v-list-item>
         <v-list-item
           :disabled="FamilyStore().permission !== 'owner'"
+          prepend-icon="mdi-application-edit-outline"
+          title="Edit Tree Information"
+          :to="`/family/edit-${$route.params.id}`"
+        ></v-list-item>
+        <v-list-item
+          :disabled="FamilyStore().permission !== 'owner'"
           prepend-icon="mdi-account-box"
           title="Family Tree Management"
           :to="`/family/permissions-${$route.params.id}`"

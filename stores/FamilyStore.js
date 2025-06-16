@@ -5,6 +5,8 @@ export const FamilyStore = defineStore("family", {
     permission: "",
     family_name: "",
     code: "",
+    image: "",
+    description: "",
   }),
   actions: {
     async getFamily(tree_id) {
@@ -25,6 +27,8 @@ export const FamilyStore = defineStore("family", {
           this.tree_id = tree_id;
           this.family_name = data.value?.family_name;
           this.code = data.value?.code;
+          this.description = data.value?.description;
+          this.image = data.value?.image;
         } else {
           alert("Có lỗi trong lúc lấy Family Member. Thử lại sau");
           navigateTo("/");
@@ -33,6 +37,44 @@ export const FamilyStore = defineStore("family", {
         console.error("Fetch Family Member thất bại:", err);
         alert("Có lỗi trong lúc lấy Family Member. Thử lại sau");
         navigateTo("/");
+      }
+    },
+    async updateFamily(treeInfo, file) {
+      try {
+        let uploadedImageUrl = null;
+        if (file) {
+          uploadedImageUrl = await uploadImage(file);
+        }
+
+        if (uploadedImageUrl)
+          treeInfo.image = uploadedImageUrl || "";
+
+        const { useFetchApi } = useApi();
+        const { data, error } = await useFetchApi(`/api/family/update`, {
+          method: "POST",
+          body: JSON.stringify({
+            tree_id: this.tree_id,
+            treeInfo,
+          }),
+        });
+
+        if (error.value) {
+          throw new Error(error.value.message);
+        }
+
+        if (data.value?.success) {
+          this.family_name = data.value?.family_name;
+          this.description = data.value?.description;
+          this.image = data.value?.image;
+          alert("Family Information Updated Successfully!");
+        } else {
+          alert("Fail to Update Family Information! Try again.");
+          navigateTo(`/family/${this.tree_id}`);
+        }
+      } catch (err) {
+        console.error("Fail to Update Family Information:", err);
+        alert("Fail to Update Family Information! Try again.");
+        navigateTo(`/family/${this.tree_id}`);
       }
     },
     async addMember(member, file) {
@@ -71,7 +113,7 @@ export const FamilyStore = defineStore("family", {
         const { fetchApi } = useApi();
         const data = await fetchApi(`/api/member/update`, {
           method: "POST",
-          body: JSON.stringify({member_id, member}),
+          body: JSON.stringify({ member_id, member }),
         });
 
         if (data.success) {
@@ -92,7 +134,10 @@ export const FamilyStore = defineStore("family", {
         });
 
         if (data.success) {
-          return {permissions: data.permissions, permissionData: data.permissionData};
+          return {
+            permissions: data.permissions,
+            permissionData: data.permissionData,
+          };
         } else {
           throw new Error(data.message);
         }

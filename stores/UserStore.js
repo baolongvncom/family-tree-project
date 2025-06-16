@@ -102,7 +102,7 @@ export const UserStore = defineStore("user", {
         }
 
         if (data.value?.success) {
-          this.name = data.value.name; // Lấy tên từ API nếu có
+          this.username = data.value.username;
           this.email = email;
           this.authenticated = true;
 
@@ -120,6 +120,38 @@ export const UserStore = defineStore("user", {
       } catch (err) {
         console.error("Fail to Sign in:", err);
         alert("Fail to Sign in! Try Again.");
+      }
+    },
+    async updateUsername(username) {
+      try {
+        const config = useRuntimeConfig();
+        const authToken = useCookie("auth-token");
+        const { data, error } = await useFetch(
+          `${config.public.apiBase}/api/updateusername`,
+          {
+            method: "POST",
+            body: JSON.stringify({ username }),
+            headers: {
+              "Content-Type": "application/json",
+              "auth-token": authToken.value,
+            },
+          }
+        );
+
+        if (error.value) {
+          throw new Error(error.value.message);
+        }
+
+        if (data.value?.success) {
+          console.log("test username: ", data.value);
+          this.username = data.value.username;
+          this.email = data.value.email;
+        } else {
+          alert("Fail to Change Username!");
+        }
+      } catch (err) {
+        console.error("Fail to Change Username:", err);
+        alert("Fail to Change Username! Try Again.");
       }
     },
   },
