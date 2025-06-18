@@ -1,7 +1,9 @@
+import { compressImage } from "./CompressImage";
+
 export async function uploadImage(file) {
   if (!file) return null;
 
-  // 👉 Nén hình ảnh trước khi upload
+  // Compress Image before upload
   const compressedFile = await compressImage(file, 0.6);
 
   const formData = new FormData();

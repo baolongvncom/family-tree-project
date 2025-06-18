@@ -1,35 +1,48 @@
-export async function compressImage(file, quality = 0.7) {
-  return new Promise((resolve) => {
+// composables/CompressImage.js
+
+export async function compressImage(file, quality = 0.6, maxWidth = 1024) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith("image/")) {
+      return reject(new Error("File Invalid"));
+    }
+
     const reader = new FileReader();
-    reader.readAsDataURL(file);
 
     reader.onload = (event) => {
       const img = new Image();
-      img.src = event.target.result;
 
       img.onload = () => {
         const canvas = document.createElement("canvas");
-        const MAX_WIDTH = 1000;
-        const scaleSize = MAX_WIDTH / img.width;
 
-        canvas.width = Math.min(img.width, MAX_WIDTH);
-        canvas.height = img.height * scaleSize;
+        const scale = Math.min(maxWidth / img.width, 1);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
 
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
         canvas.toBlob(
           (blob) => {
-            const compressedFile = new File([blob], file.name, {
-              type: "image/jpeg",
-              lastModified: Date.now(),
-            });
-            resolve(compressedFile);
+            if (blob) {
+              const compressedFile = new File([blob], file.name, {
+                type: file.type,
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            } else {
+              reject(new Error("Cannot compress Image!"));
+            }
           },
-          "image/jpeg", // hoặc "image/webp"
+          file.type,
           quality
         );
       };
+
+      img.onerror = () => reject(new Error("Error while Reading Image!"));
+      img.src = event.target.result;
     };
+
+    reader.onerror = () => reject(new Error("Cannot read File!"));
+    reader.readAsDataURL(file);
   });
 }
