@@ -39,7 +39,7 @@ export const FamilyStore = defineStore("family", {
         navigateTo("/");
       }
     },
-    async updateFamily(treeInfo, file) {
+    async updateFamily(tree_id, treeInfo, file) {
       try {
         let uploadedImageUrl = null;
         if (file) {
@@ -53,7 +53,7 @@ export const FamilyStore = defineStore("family", {
         const { data, error } = await useFetchApi(`/api/family/update`, {
           method: "POST",
           body: JSON.stringify({
-            tree_id: this.tree_id,
+            tree_id,
             treeInfo,
           }),
         });

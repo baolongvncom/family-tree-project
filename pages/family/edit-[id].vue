@@ -7,6 +7,7 @@ export default {
   },
   data() {
     return {
+      tree_id: this.$route.params.id,
       treeInfo: { name: "", image: "", description: "" },
       file: null,
       isDisabledButton: false,
@@ -26,7 +27,7 @@ export default {
     async updateTreeInfo() {
       this.isDisabledButton = true;
       try {
-        await FamilyStore().updateFamily(this.treeInfo, this.file);
+        await FamilyStore().updateFamily(this.tree_id, this.treeInfo, this.file);
       } finally {
         this.isDisabledButton = false;
       }
