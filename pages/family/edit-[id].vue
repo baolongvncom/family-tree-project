@@ -27,7 +27,7 @@ export default {
     async updateTreeInfo() {
       this.isDisabledButton = true;
       try {
-        await FamilyStore().updateFamily(this.tree_id, this.treeInfo, this.file);
+        await FamilyStore().updateFamily(this.treeInfo, this.file);
       } finally {
         this.isDisabledButton = false;
       }
