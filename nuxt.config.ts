@@ -17,7 +17,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: 'http://localhost:4000', // Base URL API
+      apiBase: 'https://deploynt208backend.onrender.com', 
     }
   },
 
