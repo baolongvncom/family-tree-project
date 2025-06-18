@@ -16,7 +16,7 @@ export default {
   computed: {
     isButtonDisabled() {
       return (
-        !this.isDisabledButton &&
+        !this.isDisabledButton ||
         this.treeInfo.name === FamilyStore().family_name &&
         this.treeInfo.image === FamilyStore().image &&
         this.treeInfo.description === FamilyStore().description
@@ -33,8 +33,9 @@ export default {
       }
     },
   },
-  created() {
+  async created() {
     // Watch file
+    await FamilyStore().getFamily(this.tree_id);
     watch(
       () => this.file,
       (newFile) => {
