@@ -25,6 +25,7 @@
             :items="achievementTypes"
             item-value="_id"
             item-title="name"
+            :readonly="!havePermissionToEdit"
           >
           </v-autocomplete>
         </div>
