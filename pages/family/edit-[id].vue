@@ -15,12 +15,13 @@ export default {
   },
   computed: {
     isButtonDisabled() {
-      return (
-        !this.isDisabledButton ||
-        this.treeInfo.name === FamilyStore().family_name &&
-        this.treeInfo.image === FamilyStore().image &&
-        this.treeInfo.description === FamilyStore().description
-      );
+      const familyStore = FamilyStore();
+      const noChange =
+        this.treeInfo.name === familyStore.family_name &&
+        this.treeInfo.image === familyStore.image &&
+        this.treeInfo.description === familyStore.description;
+
+      return this.isDisabledButton || noChange;
     },
   },
   methods: {
