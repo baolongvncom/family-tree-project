@@ -450,7 +450,7 @@ export default {
     itemProps(item) {
       return {
         title: item.full_name,
-        subtitle: item.date_of_birth + ", " + item.place_of_birth,
+        subtitle: item.date_of_birth + ", " + this.getHometownName(item.place_of_birth),
         value: item._id,
       };
     },
