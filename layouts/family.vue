@@ -3,7 +3,6 @@
     <v-app-bar color="primary">
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      
       <div class="mr-4" :style="{ fontSize: '20px', fontWeight: 'bold' }">
         {{ FamilyStore().family_name }}
       </div>
@@ -58,6 +57,11 @@
           prepend-icon="mdi-application-edit-outline"
           title="Edit Tree Information"
           :to="`/family/edit-${$route.params.id}`"
+        ></v-list-item>
+        <v-list-item
+          prepend-icon="mdi-file-chart-outline"
+          title="Attributes"
+          :to="`/family/attributes-${$route.params.id}`"
         ></v-list-item>
         <v-list-item
           :disabled="FamilyStore().permission !== 'owner'"

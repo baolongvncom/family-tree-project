@@ -20,13 +20,13 @@
           to="/"
         ></v-list-item>
         <v-list-item
-          prepend-icon="mdi-account-box"
+          prepend-icon="mdi-gavel"
           title="Create or Search Family Tree"
           to="/createorsearch"
         ></v-list-item>
         <v-list-item
           to="/account"
-          prepend-icon="mdi-gavel"
+          prepend-icon="mdi-account-box"
           title="Account"
         ></v-list-item>
       </v-list>

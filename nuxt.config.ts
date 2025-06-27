@@ -17,7 +17,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: 'https://deploynt208backend.onrender.com', 
+      apiBase: process.env.NUXT_PUBLIC_API_BASE, 
     }
   },
 

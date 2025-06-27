@@ -103,11 +103,6 @@ export default {
       achievements: [],
       achievements_formData: [],
       achievementTypes: [],
-      headers: [
-        { title: "Type", key: "new_type" },
-        { title: "Date", key: "date" },
-        { title: "Actions", key: "actions", align: "end", sortable: false },
-      ],
       newAchievementFormData: {
         date: new Date().toISOString().split("T")[0],
         member_id: this.$route.params.id,

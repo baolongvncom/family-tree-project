@@ -97,8 +97,5 @@ export default {
       }
     },
   },
-//   async created() {
-//     await this.getReport();
-//   }
 };
 </script>

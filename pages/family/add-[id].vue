@@ -143,14 +143,17 @@ export default {
     try {
       const { fetchApi } = useApi();
       const data = await fetchApi(`/api/treeinfo/getJobAndHometown`, {
-        method: "GET",
+        method: "POST",
+        body: JSON.stringify({ tree_id: this.$route.params.id }),
       });
 
       if (data.success) {
         this.jobs = data.jobs;
         this.hometowns = data.hometowns;
-        this.member.job = data.jobs.find(h => h.name === "Không")?._id || null;
-        this.member.place_of_birth = data.hometowns.find(h => h.name === "Không rõ")?._id || null;
+        this.member.job =
+          data.jobs.find((h) => h.name === "Unknown")?._id || null;
+        this.member.place_of_birth =
+          data.hometowns.find((h) => h.name === "Unknown")?._id || null;
       } else {
         throw new Error(data.message);
       }
