@@ -1,8 +1,18 @@
-# Nuxt Minimal Starter
+# 🧪 Test Accounts
+The website is deployed at: [https://family-tree-project-utno.onrender.com](https://family-tree-project-utno.onrender.com)
+
+Use the following accounts to test the application (for demo purposes only):
+
+| Email                | Password     |
+|---------------------|--------------|
+| hungvo210405@gmail.com| 123456       | 
+| long@gmail.com  | 123456     |
+
+## Nuxt Minimal Starter
 
 Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
-## Setup
+### Setup
 
 Make sure to install dependencies:
 
