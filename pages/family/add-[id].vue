@@ -105,6 +105,17 @@ export default {
         description: "None",
         address: "Unknown",
       },
+      default_member: {
+        tree_id: "",
+        full_name: "",
+        job: null,
+        gender: "male",
+        date_of_birth: new Date().toISOString().split("T")[0],
+        place_of_birth: null,
+        image: "",
+        description: "None",
+        address: "Unknown",
+      },
       file: null,
       isDisabledButton: false,
       familyStore: FamilyStore(),
@@ -135,6 +146,8 @@ export default {
         this.member.tree_id = this.$route.params.id;
         await this.familyStore.addMember(this.member, this.file);
       } finally {
+        this.member = this.default_member;
+        this.file = null;
         this.isDisabledButton = false;
       }
     },

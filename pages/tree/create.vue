@@ -9,6 +9,7 @@ export default {
     return {
       imageUrl: null,
       treeInfo: { name: "", image: "", description: "", role: {} },
+      default_treeInfo: { name: "", image: "", description: "", role: {} },
       file: null,
       isDisabledButton: false,
     };
@@ -33,6 +34,8 @@ export default {
       try {
         await TreeInfoStore().addTreeInfo(this.treeInfo, this.file);
       } finally {
+        this.treeInfo = this.default_treeInfo;
+        this.file = null;
         this.isDisabledButton = false;
       }
     },

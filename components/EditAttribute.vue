@@ -24,6 +24,7 @@
           <v-text-field
             v-model="item.new_name"
             :readonly="!havePermissionToEdit"
+            width="300"
           >
           </v-text-field>
         </div>
