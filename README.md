@@ -8,6 +8,8 @@ Use the following accounts to test the application (for demo purposes only):
 | hungvo210405@gmail.com| 123456       | 
 | long@gmail.com  | 123456     |
 
+Wait about 1 minutes if you first login to the Website
+
 ## Nuxt Minimal Starter
 
 Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
