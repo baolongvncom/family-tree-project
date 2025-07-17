@@ -16,6 +16,14 @@ Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduct
 
 ### Setup
 
+Deploy backend server at [BackendFamilyTree](https://github.com/baolongvncom/BackendFamilyTree)
+
+Before running the project, create a `.env` file in the root directory and add the following environment variables:
+```bash
+# backend server
+NUXT_PUBLIC_API_BASE=http://localhost:4000
+```
+
 Make sure to install dependencies:
 
 ```bash
