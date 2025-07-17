@@ -8,7 +8,7 @@ Use the following accounts to test the application (for demo purposes only):
 | hungvo210405@gmail.com| 123456       | 
 | long@gmail.com  | 123456     |
 
-Wait about 1 minutes if you first login to the Website
+Wait about 1 minute for the website to wake up and 1 more minute if you first login to the Website
 
 ## Nuxt Minimal Starter
 
