@@ -93,3 +93,27 @@ bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+# 🧩 Features
+Create, update, and delete family trees
+
+Manage members and their relationships
+
+Track achievements and causes of death
+
+Upload images with Cloudinary
+
+Uses MongoDB as the database
+
+# 🛠 Dependencies
+Express
+
+Mongoose
+
+Cloudinary
+
+dotenv
+
+uuid
+
+cors
